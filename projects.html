@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio W.I.P. - Projects</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="shortcut icon" href="images/favicon-t.webp" type="image/x-icon">
+    <script src="javascript/script.js" defer></script>
+</head>
+
+<body>
+<!--============================================================
+        BACKGROUND SECTION
+    ============================================================ -->
+    <!--Blobby Thingy-->
+    <div class="blob-outer-container">
+        <div class="blob-inner-container">
+            <div class="blob">
+            </div>
+        </div>
+    </div>
+    <!--Lava Thingy-->
+    <canvas id="gradient-bg"></canvas>
+
+
+<!--============================================================
+        HEADER
+    ============================================================ -->
+    <div class="container">    
+        <header class="header-container" id = "header">
+            <div class="logo-container" id="logo-container">
+                <a href="index.html"><img src="images/large-logo-t.webp" alt="Logo"></a>
+                <h1><a href="index.html">Cartalla Portfolio</a></h1>
+            </div>
+            <button class="burger-menu" id="burger-menu" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="nav-menu">
+                <ul>
+                    <li>
+                        <button type="button" >
+                            <a href="index.html">Home</a>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="glass2">
+                            <a href="projects.html">Projects</a>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button">
+                            <a href="contacts.html">Contact</a>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- Back to Top Button -->
+        <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+            <span>↑</span>
+        </button>
+
+    <main>
+<!--============================================================
+        HERO BANNER
+    ============================================================ -->
+        <div class="hero-banner" id="hero-banner">
+            <video autoplay disablePictureInPicture muted loop playsinline preload="auto">
+                <source src="videos/hero-banner-video-2.webm" type="video/webm">
+            </video>
+            <h1>PROJECTS</h1>
+            <p>A collection of my works and projects, showcasing the skills and knowledge I've acquired over the years.</p>
+        </div>
+<!--============================================================
+        PROJECTS: lebomba
+    ============================================================ -->
+        <div class="project-section">
+<!--============================================================
+        PROJECTS: Navigation Panel
+    ============================================================ -->
+            <div class="menu glass0">
+                <p class="glass2">COMPLETED PROJECTS:</p>
+                <div class="button-group glass0">
+                    <button><a href="#animation">ANIMATION</a></button>
+                    <button><a href="#minisys">MINI-SYSTEM</a></button>
+                    <button><a href="#wrdprs">WEB DESIGN</a></button>
+                    <button><a href="#photoshop">PHOTOSHOP</a></button>
+                    <button><a href="#video-editing">VIDEO EDITING</a></button>
+                </div>
+            </div>
+<!--============================================================
+        PROJECTS: Main Content
+    ============================================================ -->              
+            <div class="projects-main-container glass0">
+<!--============================================================
+        PROJECTS: ANIMATION
+    ============================================================ -->    
+               <section id="subsection">
+
+                    <div class="subheader glass2"><h2><a href="#animation">ANIMATION</a></h2></div>
+
+                    <div class="project-content glass0" id="animation">
+                        <p class= "subheader" id="title">"BATA SA SANGA"</p>
+                        <div>
+                            <div class="project-media">
+                                <video controls>
+                                <source src="videos/project-animation.webm"  type="video/webm">
+                                </video>
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>"Bata sa Sanga" is a 2D animated short film I made alongside a team of two other classmates as part of our requirement in "Reading Visual Arts". The story was the creation of Romy Moralyna, and was about a terrifying folk horror story about a ghostly appirition that haunted some fishermen.</p>
+                                    <p>My primary role was the animation itself; I handled the asset creation, the storyboarding, and the 2d puppetting animation. It was quite tedious work, and there were a lot of issues that I encountered along the way, but I also learned a lot from this experience, in particular the workflow and pipeline required to achieve a coherent animation.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Storyboarding</li>
+                                        <li>2D Animation</li>
+                                        <li>Grease Pencil (Blender)</li>
+                                        <li>Adobe Animate</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+<!--============================================================
+        PROJECTS: MINI SYSTEMS
+    ============================================================ -->  
+                <section id="subsection">
+
+                    <div class="subheader glass2"><h2><a href="#minisys">MINI SYSTEMS</a></h2></div>
+                    
+                    <div class="project-content glass0">
+                        <p class= "subheader" id="title">"EXSIDMIT"</p>
+                        <div>
+                            <div class="project-media" id="minisys">
+                                <img src="images/projects/exsidmit0.webp">
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>EXSIDMIT is a mini-system developed as our final term project for both CC103 and IM101 classes; that is it is a joint project that requires integrating C# Graphical User Interface and an SQL Backend Database. Our group tackled the creation of a digitalized violation tracking system for Pamantasan ng Lungsod ng Valenzuela.</p>
+                                    <p>The main innovation of our program was that it not only provided a centralized control for the administration to handle violations (which was already available), but it also gave regular students their own user account so they can view and petition any violations under their name, ensuring transparency and communication.</p>
+                                    <p>I was responsible for most of the C# GUI development as well as the SQL database design and implementation. I had to redo the code 3 times as I switched from Microsoft SQL Server, to MySQL, to finally SQLite, which worked well for our need of making it a portable database transferrable along with the program files.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Database Designing</li>
+                                        <li>Software Development</li>
+                                        <li>C# and SQL Integration</li>
+                                        <li>Version Iteration</li>
+                                        <li>Project Management</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-content glass0" >
+                        <p class= "subheader" id="title">"EASY STOCK"</p>
+                        <div>
+                            <div class="project-media">
+                                <img src="images/projects/easystock0.webp">
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>EASY STOCK is another mini-system developed as our final term project, this time for Data Structures and Algorithms. Admittedly my hardest project to date, it required us as a group to create a console-based inventory management system with an integrated Point of Sale module. Purely in C++, and required to save data persistently through text files.</p>
+                                    <p>The hard part about creating this program, was simply the c++ version we had to use; devc++ 5.11 is quite an outdated IDE, with the latest C++ version being an experimental version of C++11!. That caused me quite the grief when I first finished it and realized I was using a more up to date version with C++ 20 instead.</p>
+                                    <p>Admittedly, using SQL instead would have made this far easier and more capable than what we ended up creating, but the experience of designing and implementing the system purely through conventional (and legacy at that) programming software and techniques was quite the experience.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Algorithm Design</li>
+                                        <li>Logical Construction</li>
+                                        <li>C++ Programming</li>
+                                        <li>Legacy Code Handling</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+<!--============================================================
+        PROJECTS: WORDPRESS/WEB DESIGN
+    ============================================================ --> 
+                <section id="subsection">
+
+                    <div class="subheader glass2"><h2><a href="#wrdprs">WEB DESIGN</a></h2></div>
+
+                    <div class="project-content glass0" id="wrdprs">
+                        <p class= "subheader" id="title">"VALPREP"</p>
+                        <div>
+                            <div class="project-media">
+                                <img src="images/projects/valprep1.webp">
+                            </div>
+                            <div class="project-media">
+                                <img src="images/projects/valprep2.webp">
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>My first true IT Project, "VALPREP" is actually two different projects formed from a similar purpose: Primarily to serve as topic for our Quantitative and Mixed-Method research subjects during Grade 12. It was envisioned as an all-in-one website for identifying, reviewing, and discussing various topics regarding tertiary education, i.e. University Preparation.</p>
+                                    <p>The first website was incredibly challenging, what with my zero experience in this field at the time. It was built using wordpress.com, which made it incredibly tedious to work with as most features where locked behind paywalls. Learning from this mistake, I instead went for hostinger.com as it actually utilized the open-source wordpress builder (note that wordpress.com and .org are two different platforms).</p>
+                                    <p>Anyways, the second round (which was also a seperate research project) went far smoother, and applying what I learned from the first one, I was able to create a more efficient, responsive, and feature-packed website, with a couple dozen pages, and some integrated-chat functionality as well. Unfortunately, both websites are currently down as the subscription is now expired, but the experience stayed with me.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Wordpress CMS</li>
+                                        <li>Live Hosting</li>
+                                        <li>Responsive Web Design</li>
+                                        <li>Performance Optimization</li>
+                                        <li>UI/UX Design</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+<!--============================================================
+        PROJECTS: PHOTOSHOP
+    ============================================================ -->  
+               <section id="subsection">
+
+                    <div class="subheader glass2"><h2><a href="#photoshop">PHOTOSHOP</a></h2></div>
+
+                    <div class="project-content glass0" id="photoshop">
+                        <p class= "subheader" id="title">"RIVERWALK BROCHURE"</p>
+                        <div>
+                            <div class="project-media">
+                                <img src="images/projects/Brochure.webp">
+                            </div>
+                            <div class="project-media">
+                                <img src="images/projects/Brochure-backside.webp">
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>My latest project as part of our Multimedia course, we were tasked with creating a brochure for a local attraction or relevant location within Valenzuela City. Our group chose River Polowalk, one of the newer infrastructure projects in the city.</p>
+                                    <p>I was responsible for the majority of the design and layout of the brochure, and it was one of my most efficient projects to date. I applied the lessons we've learned since the start of our course into it's creation, and also learned about using guides and groups for the various layers and mask, while ensuring consistency and replicability within the design.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Photoshop</li>
+                                        <li>Layout Design</li>
+                                        <li>Typography</li>
+                                        <li>Color Theory</li>
+                                        <li>Print Design</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+<!--============================================================
+        PROJECTS: VIDEO EDITING
+    ============================================================ -->    
+               <section id="subsection">
+
+                    <div class="subheader glass2"><h2><a href="#video-editing">VIDEO EDITING</a></h2></div>
+
+                    <div class="project-content glass0" id="video-editing">
+                        <p class= "subheader" id="title">"ORDERTAKER"</p>
+                        <div>
+                            <div class="project-media">
+                                <video controls>
+                                <source src="videos/project-ordertaker.webm"  type="video/webm">
+                                </video>
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>"ORDERTAKER" is a satire music video that was inspired by the song of the same name. This was for our Contemporary World subject, and was originally supposed to be instead about the Coconut Song, but for some unforeseable reason, my teammates really didn't like that idea.</p>
+                                    <p>Aside from Video Editing, I also acted as the director and cinematographer of this project. While not my forte, I did enjoy the experience, and it was a great experience to learn what shots are needed for the video to work and how to get the shots.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Music Video Editing</li>
+                                        <li>Filmora</li>
+                                        <li>Audio Mixing</li>
+                                        <li>Cinematography</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-content glass0" id="video-editing">
+                        <p class= "subheader" id="title">"LEGENDS OF WARAY"</p>
+                        <div>
+                            <div class="project-media">
+                                <video controls>
+                                <source src="videos/project-warayvideo.webm"  type="video/webm">
+                                </video>
+                            </div>
+                            <div class="project-column">
+                                <div class="bigger-column">
+                                    <h3>Description:</h3>
+                                    <p>Not my most polished work, but this was a result of the collaboration with my team to create a spin to our documentary project for our Readings in Philippine History. Instead of creating a conventional documentary, we opted for a gamefied approach to it, utilising pseudo-animations via built in tools within the Filmora Editor.</p>
+                                    <p>This was also one of the harder works I had to accomplish, as aside from being the primary animator/editor, I was also under extreme time pressure from our class, as little as two weeks for the entire 20 minute video! We also did a live interview for this project, but we sadly didn't manage to fit it in within the script and time constraint. Nevertheless, it was a fun, albeit hectic ride.</p>
+                                </div>
+                                <div>
+                                    <h3>Skills Developed:</h3>
+                                    <ol>
+                                        <li>Pseudo-Aniamtion</li>
+                                        <li>Longform Editing</li>
+                                        <li>Project Migration</li>
+                                        <li>Asset Creation/Cleanup</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div> 
+        
+        </main>
+
+        <footer>
+            <div>
+                <div class="footer-container">
+                    <div class="footer-col">
+                        <h3>By Jesse Aaron D. Cartalla</h3>
+                        <p>Contact: 09683104585</p>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Other Pages:</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contacts.html">Contacts</a></li>
+                        </ul>
+                        
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026. All rights reserved.</a></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio W.I.P. - Portfolio</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="shortcut icon" href="images/favicon-t.webp" type="image/x-icon">
+    <script src="javascript/script.js" defer></script>
+</head>
+
+
+<body>
+<!--============================================================
+        BACKGROUND SECTION
+    ============================================================ -->
+    <!--Blobby Thingy-->
+    <div class="blob-outer-container">
+        <div class="blob-inner-container">
+            <div class="blob">
+            </div>
+        </div>
+    </div>
+    <!--Lava Thingy-->
+    <canvas id="gradient-bg"></canvas>
+
+
+<!--============================================================
+        HEADER
+    ============================================================ -->
+    <div class="container">    <!--  <=>-->
+        <header class="header-container" id = "header">
+            <div class="logo-container" id="logo-container">
+                <a href="index.html"><img src="images/large-logo-t.webp" alt="Logo"></a>
+                <h1><a href="index.html">Cartalla Portfolio</a></h1>
+            </div>
+            <button class="burger-menu" id="burger-menu" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="nav-menu">
+                <ul>
+                    <li>
+                        <button type="button" class="glass2">
+                            <a href="index.html">Home</a>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button">
+                            <a href="projects.html">Projects</a>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button">
+                            <a href="contacts.html">Contact</a>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- Back to Top Button -->
+        <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+            <span>↑</span>
+        </button>
+
+    <main> <!--Main Wrapper for content-->
+<!--============================================================
+        HERO BANNER
+    ============================================================ -->
+        <div class="hero-banner" id="hero-banner">
+            <video autoplay disablePictureInPicture muted loop playsinline preload="auto">
+                <source src="videos/hero-banner-video-2.webm" type="video/webm">
+            </video>
+            <h1>HOME</h1>
+            <p>Get to know more about me, my skills, and my accomplishments.</p>
+        </div>
+<!--============================================================
+        WELCOME
+    ============================================================ -->
+            <div class="welcome-section glass0">
+                <section>
+                    <div class="home-content">
+                        <h2>Dear Visitors:</h2>
+                        <p id="p1">WELCOME!</p>
+                        <p id="p2">My name is Jesse Aaron D. Cartalla</p>
+                        <p id="p3">A BSIT Student of Pamantasan ng Lungsod ng Valenzuela.</p>
+                        <p id="p4">My goal is too be the bridge between man and the machine.</p>
+                    </div>  
+                </section>
+                <section>
+                    <div class="picture">
+                        <img src="images/main-photo.webp" alt="">
+                    </div>
+                </section>
+            </div>
+
+<!--============================================================
+        DEMO REEL
+    ============================================================ -->
+        <section id="demo-section">
+            <div class=" subheader glass2">
+                <h2>Demo Reel</h2>
+            </div>
+            <div class="demo-reel glass0">
+                <video controls>
+                    <source src="videos/project-animation.webm"  type="video/webm">
+                </video>
+            </div>
+        </section>
+
+<!--============================================================
+        ABOUT ME
+    ============================================================ -->
+        <section id = "about-section">
+            <div class=" subheader glass2">
+                <h2>More About</h2>
+            </div>
+
+            <div class="flex-container">
+
+                <div class="card glass0 column">
+                    <div class="about-list">
+                        <h3 class="text-pop">Personal Information</h3>
+                        <ul>
+                            <li><h4 >Full Name</h4>
+                                <p>Jesse Aaron D. Cartalla</p>
+                            </li>
+                            <li><h4>Birthday</h4>
+                                <p>September 21, 2005</p>
+                            </li>
+                            <li><h4>Address</h4>
+                                <p>193 Sto. Rosario St., Karuhatan, Valenzuela City</p>
+                            </li>
+                            <li><h4>Hobbies</h4>
+                                <p>Cooking and Videogames</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card glass0 column">
+                    <div class="about-list">
+                        <h3 class="text-pop">Education</h3>
+                        <ul>
+                            <li><h4>2018 - 2022</h4>
+                                <p>Junior High School</p>
+                                <p>VALMASCI</p>
+                            </li>
+                            <li><h4>2022 - 2024</h4>
+                                <p>Senior High School</p>
+                                <p>VALMASCI</p>
+                            </li>
+                            <li><h4>2024 - Present</h4>
+                                <p>College BSIT Undergrad</p>
+                                <p>PLV</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card glass0 column">
+                    <div class="about-list">
+                        <h3 class="text-pop">Skills</h3>
+                        <ul>
+                            <li><h4>Animation</h4>
+                                <p>Proficiency in 2D puppet animations and storyboarding.</p>
+                            </li>
+                            <li><h4>Editing</h4>
+                                <p>Experienced with Video Editing in Filmora.</p>
+                            </li>
+                            <li>
+                                <h4>SQL</h4>
+                                <p>Proficiency in linking databases and developing basic mini-systems.</p>
+                            </li>
+                            <li>
+                                <h4>Critical Thinking</h4>
+                                <p>Strong analytical and problem-solving skills.</p>
+                            </li>
+                        </ul>
+                        <h3 class="text-pop">Experience</h3>
+                        <ul>
+                            <li><h4>2024</h4>
+                                <p>Work-Immersion</p>
+                                <p>Information and Technology Office of ALERT Center</p>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li><h4>2024 - 2026</h4>
+                                <p>Classroom Representative (1st-2nd Year)</p>
+                                <p>Valenzuela Information Technology Society</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card glass0 column">
+                    <section class="about-list">
+                        <h3 class="text-pop">Seminars</h3>
+                        <ul>
+                            <li><h4>2025</h4>
+                                <p>Behind the Clouds:</p>
+                                <p>Exploring Latest Trends in Cloud Computing</p>
+                            </li>
+                            <li><h4>2025</h4>
+                                <p>Open Source Innovation:</p>
+                                <p>How Red Hat is Driving Real-World Technology</p>
+                            </li>
+                            <li><h4>2025</h4>
+                                <p>Engineering the Speed of Thought:</p>
+                                <p>Maximizing Developer Efficientcy with LLMs</p>
+                            </li>
+                            <li><h4>2025</h4>
+                                <p>Cybersecurity Fundamentals</p>
+                            </li>
+                            <li><h4>2025</h4>
+                                <p>Mastering Project Management:</p>
+                                <p>Essential Skills for IT Success</p>
+                            </li> 
+                        </ul>
+                    </section>
+                </div>
+
+                <div class="card glass0">
+                    <section class="about-list">
+                        <h3 class="text-pop comp-h3">COMPETITIONS</h3>
+                        <ul id="competitions">
+                            <li>
+                                <div>
+                                    <h4>T.I.P. QUIZ BEE 2023</h4>
+                                    <p>2nd Runner-Up</p>
+                                </div>
+                                <div><img src="images/competitions/competition-TIPquizshow-2.webp"></div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4>BRAINIAC 2024</h4>
+                                    <p>1st Runner-Up</p>
+                                </div>
+                                <div><img src="images/competitions/competition-brainiac-3.webp"></div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4>BATTLE OF THE BRAINS 2024</h4>
+                                    <p>4th Runner-Up</p>
+                                </div>
+                                <div><img src="images/competitions/competition-AMA-5.webp"></div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4>INTERNATIONAL KANGAROO MATHEMATICS CONTEST 2024</h4>
+                                    <p>Silver Medalist</p>
+                                </div>
+                                <div><img src="images/competitions/competition-IKMC-0.webp"></div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4>PHILIPPINE INTERNATIONAL MATHEMATICS OLYMPIAD 2024</h4>
+                                    <p>Bronze Medalist</p>
+                                </div>
+                                <div><img src="images/competitions/competition-phimo-0.webp"></div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4>ITLYPMICS QUIZ BEE 2026</h4>
+                                    <p>1st Place</p>
+                                </div>
+                                <div><img src="images/competitions/competition-phimo-0.webp"></div>
+                            </li>
+                        </ul>
+                    </section>
+                </div>         
+            </div>
+        </section>   
+
+    </main>
+
+        <footer>
+            <div>
+                <div class="footer-container">
+                    <div class="footer-col">
+                        <h3>By Jesse Aaron D. Cartalla</h3>
+                        <p>Contact: 09683104585</p>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Other Pages:</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contacts.html">Contacts</a></li>
+                        </ul>
+                        
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026. All rights reserved.</a></p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>

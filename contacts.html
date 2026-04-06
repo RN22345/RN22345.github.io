@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio W.I.P. - Contacts</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="shortcut icon" href="images/favicon-t.webp" type="image/x-icon">
+    <script src="javascript/script.js" defer></script>
+</head>
+
+
+<body>
+<!--============================================================
+        BACKGROUND SECTION
+    ============================================================ -->
+    <!--Blobby Thingy-->
+    <div class="blob-outer-container">
+        <div class="blob-inner-container">
+            <div class="blob">
+            </div>
+        </div>
+    </div>
+    <!--Lava Thingy-->
+    <canvas id="gradient-bg"></canvas>
+
+
+<!--============================================================
+        HEADER
+    ============================================================ -->
+    <div class="container">    
+        <header class="header-container" id = "header">
+            <div class="logo-container" id="logo-container">
+                <a href="index.html"><img src="images/large-logo-t.webp" alt="Logo"></a>
+                <h1><a href="index.html">Cartalla Portfolio</a></h1>
+            </div>
+            <button class="burger-menu" id="burger-menu" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="nav-menu">
+                <ul>
+                    <li>
+                        <button type="button">
+                            <a href="index.html">Home</a>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button">
+                            <a href="projects.html">Projects</a>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="glass2">
+                            <a href="contacts.html">Contact</a>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- Back to Top Button -->
+        <button class="back-to-top glass2" id="back-to-top" aria-label="Back to top">
+            <span>↑</span>
+        </button>
+
+        <main>
+        <div class="hero-banner" id="hero-banner">
+            <video autoplay disablePictureInPicture muted loop playsinline preload="auto">
+                <source src="videos/hero-banner-video-2.webm" type="video/webm">
+            </video>
+            <h1>CONTACT</h1>
+            <p>Interested in what you see? Contact me!</p>
+        </div>
+
+<section class="contact-section">
+        <div class="subheader glass2"><h2>Contact Information</h2></div>
+        <div class="contact-wrapper glass0">
+            
+            <!-- Personal Info -->
+            <div class="contact-info">
+                <h1 class="title">Let's build something <span class="highlight">together.</span></h1>
+                <p class="description">
+                    I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions. Whether you have a question or just want to say hi, feel free to drop me a message!
+                </p>
+
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h3>Email Me</h3>
+                        <a href="mailto:cartallajesse956@gmail.com">cartallajesse956@gmail.com</a>
+                        <!--<a href="/cdn-cgi/l/email-protection#1c7f7d6e687d70707d76796f6f7925292a5c7b717d7570327f7371"><span class="__cf_email__" data-cfemail="3457554640555858555e514747510d0102745359555d581a575b59">[email&#160;protected]</span></a> neat little cloudflare email obsfucation, doesnt work local lol-->
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h3>Contact No.</h3>
+                        <a href="tel:+4733378901">+47 333 78 901</a>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://linkedin.com" aria-label="LinkedIn"><img src="images/linkedin.webp" alt="LinkedIn"></a>
+                    <a href="https://github.com/RN22345" aria-label="GitHub"><img src="images/github.webp" alt="GitHub"></a>
+                    <a href="https://www.facebook.com/jesseaaron.cartalla" aria-label="Facebook"><img src="images/facebook.webp" alt="Facebook"></a>
+                </div>
+                
+                <div class="status-badge">
+                    <span class="dot"></span> Available for new projects
+                </div>
+            </div>
+
+            <!-- contact form -->
+            <div class="contact-form-container glass0">
+                <form action="#" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="email@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">What are you looking for?</label>
+                        <select id="subject" name="subject">
+                            <option value="freelance">Freelance Project</option>
+                            <option value="job">Job Opportunity</option>
+                            <option value="collab">Collaboration</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Tell me a bit about your project..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Send Message <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+        </main>
+        <footer>
+            <div>
+                <div class="footer-container">
+                    <div class="footer-col">
+                        <h3>By Jesse Aaron D. Cartalla</h3>
+                        <p>Contact: 09683104585</p>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Other Pages:</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contacts.html">Contacts</a></li>
+                        </ul>
+                        
+                    </div>
+                </div>
+                <div class="footer-bottom">
+        
