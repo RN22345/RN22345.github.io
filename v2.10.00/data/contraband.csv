@@ -1,0 +1,13 @@
+ID,Name,Icon,Class,Type,Amount,Element,Desc
+1,Moonshine,🍾,Active,heal,4,,"Heal 4 HP."
+2,Big Green,🟢,Active,bignext,10,,"Next round your line holds 10 elements."
+3,Burner,🔥,Active,damage,2,FIRE,"Deal 2 damage. Counts as a Fire cantrip."
+4,Bulletproof,🛡️,Active,block,4,,"+4 Block this round."
+5,Molotov,🍾,Active,aoe,2,,"Deal 2 damage to every other wizard."
+6,Shatter Shot,💥,Active,shatter,1,,"Destroy one target's Sigil or passive gear."
+7,The Turf,🏙️,Passive,lineSize,2,,"Your Finger Line is +2 elements this game."
+8,Burner Phone,📱,Passive,fireDmg,1,FIRE,"Your Fire damage spells +1 damage each."
+9,Clean Kit,🧼,Passive,cleanKit,1,,"Your Trigger Thumbs never roll a 1 (Backfire)."
+10,Iron Jaw,🦷,Passive,blockOnBlock,1,,"+1 Block whenever you use a Block card."
+11,Snitch Tip,👂,Passive,markCap,1,,"Your Crew Mark cap rises by 1."
+12,Lead Vest,🦺,Passive,dmgTaken,1,,"Take -1 damage from single-target spells (min 1)."

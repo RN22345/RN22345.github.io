@@ -1,0 +1,5 @@
+ID,Name,Icon,Desc,Require,Slot,BonusType,Amount
+1,Heat Brand,🔥,"If Fire is on your slot, your Fire spells deal +2 damage.",FIRE,1,damage,2
+2,Flow Brand,💧,"If Water is on your slot, gain +2 Block.",WATER,1,block,2
+3,Void Brand,🌑,"If your slot is empty at reveal, gain +3 Block.",EMPTY,1,block,3
+4,Mirror Brand,🪞,"The first attack aimed at you reflects to its caster.",ANY,1,reflect,1

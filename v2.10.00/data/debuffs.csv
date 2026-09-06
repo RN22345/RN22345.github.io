@@ -1,0 +1,7 @@
+Name,Icon,Color,Desc,DamagePerTurn,SkipTurn,LoseBlock,DrawPenalty,ImmediateDamage
+Bleeding,🩸,#ff6b6b,"Take 1 damage at the start of your turn (ignores Block).",1,0,0,0,0
+Sick,🤢,#a0e36a,"Take 2 damage at the start of your turn (ignores Block).",2,0,0,0,0
+Burn,🔥,#ff5a3c,"Take 1 now and 1 at the start of each of your turns.",1,0,0,0,1
+Stun,⚡,#ffd447,"Lose your next turn.",0,1,0,0,0
+Freeze,❄️,#bdeff7,"Lose your next turn and gain no Block that turn.",0,1,1,0,0
+Cuffed,⛓️,#c9a6ff,"Draw 1 fewer card at the start of your turns.",0,0,0,1,0
