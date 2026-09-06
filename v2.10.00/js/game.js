@@ -27,7 +27,7 @@
       buffs: [], debuffs: [], pendingCuff: false, bigNext: false,
       turnLost: 0, frozen: false, drawBonus: 0, handReduced: 0,
       dealtTodayTotal: 0, dealtThisRound: 0,
-      alive: true, locked: false,
+      alive: true, locked: false, left: false,
     };
   }
 
@@ -232,6 +232,21 @@
     state.log.push(winner.name + " is the last crew standing.");
   }
 
+  // A wizard left the session (P2P). Mark them out + unlocked so the round can
+  // never be blocked by someone who won't ever lock. Winner is decided by the normal
+  // pump (resolve -> checkWinner), not here.
+  function removePlayer(state, id) {
+    const p = byId(state, id);
+    if (!p) return false;
+    p.left = true;
+    if (p.alive) {
+      p.alive = false;
+      p.locked = true;
+      state.log.push(p.name + " left the session.");
+    }
+    return true;
+  }
+
   function serialize(state) { return JSON.parse(JSON.stringify(state)); }
 
   // Apply a generic action payload from the network / controller. Returns {ok,state,error}.
@@ -256,7 +271,7 @@
     drawCards, recalcLine, addToLine, moveLineCard, removeFromLine,
     setTarget, setThumbsSpend, toggleContraband, turnInCard,
     beginRound, allLocked, lockPlayer, applyPlan, buildPlan,
-    slotElement, pickTarget, defaultTarget, checkWinner,
+    slotElement, pickTarget, defaultTarget, checkWinner, removePlayer,
     markCap, serialize, applyPayload, shuffle,
   };
 })();

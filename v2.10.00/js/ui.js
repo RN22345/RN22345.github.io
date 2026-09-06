@@ -205,39 +205,81 @@
     app.append(dataPanel);
 
     const setup = el("div", "players-setup");
+    let waitingRemotes = 0;
     cfg.players.forEach((p, i) => {
       const card = el("div", "player-setup-card");
       card.append(el("div", "label", "Wizard " + (i + 1)));
-      // name + type
-      const row1 = el("div", "setup-row");
-      const name = el("input", "text"); name.type = "text"; name.value = p.name; name.placeholder = "Name";
-      name.addEventListener("input", () => { p.name = name.value; cfg.onChange(); });
-      const type = select([{ value: "human", label: "Human" }, { value: "ai", label: "AI" }], p.type, (v) => { p.type = v; cfg.onChange(); });
-      row1.append(name, type);
-      card.append(row1);
-      // sigil + slot
-      const row2 = el("div", "setup-row");
-      const sigilSel = select(cfg.sigils.map((s) => ({ value: String(s.ID), label: String(s.Name) })), p.sigilId, (v) => { p.sigilId = v; cfg.onChange(); });
-      row2.append(chip("Sigil", "muted"), sigilSel);
-      const slotSel = select(Array.from({ length: cfg.config.LINE_SIZE }, (_, k) => ({ value: String(k + 1), label: "Slot " + (k + 1) })), p.sigilSlot, (v) => { p.sigilSlot = v; cfg.onChange(); });
-      row2.append(slotSel);
-      card.append(row2);
-      if (p.sigilId) { const s = cfg.sigils.find((x) => String(x.ID) === String(p.sigilId)); if (s) card.append(el("div", "muted small", (s.Icon || "") + " " + s.Desc)); }
-      // contraband (pick 2)
-      const row3 = el("div", "setup-row");
-      const cbSel = select(cfg.contraband.map((c) => ({ value: String(c.ID), label: (c.Icon || "") + " " + c.Name + " (" + c.Class + ")" })), p.contrabandIds[0], (v) => { p.contrabandIds[0] = v; cfg.onChange(); });
-      const cbSel2 = select(cfg.contraband.map((c) => ({ value: String(c.ID), label: (c.Icon || "") + " " + c.Name + " (" + c.Class + ")" })), p.contrabandIds[1], (v) => { p.contrabandIds[1] = v; cfg.onChange(); });
-      row3.append(chip("Contraband", "muted"), cbSel, cbSel2);
-      card.append(row3);
-      const descs = p.contrabandIds.map((id) => { const c = cfg.contraband.find((x) => String(x.ID) === String(id)); return c && c.Desc; }).filter(Boolean);
-      if (descs.length) card.append(el("div", "muted small", descs.join(" · ")));
+      if (p.remote) {
+        // Remote human wizards self-serve on their own device; the host only watches.
+        card.append(el("div", "muted", p.name + " (remote wizard \u2014 self-serve loadout)"));
+        if (p.setupReady) card.append(chip("loadout received", "good"));
+        else { card.append(chip("waiting for their loadout", "heat")); waitingRemotes++; }
+        card.append(el("div", "muted small", "They pick their own Sigil / slot / Contraband on their screen. If you start before they send it, a random loadout is used so the game never stalls."));
+      } else {
+        // name + type
+        const row1 = el("div", "setup-row");
+        const name = el("input", "text"); name.type = "text"; name.value = p.name; name.placeholder = "Name";
+        name.addEventListener("input", () => { p.name = name.value; cfg.onChange(); });
+        const type = select([{ value: "human", label: "Human" }, { value: "ai", label: "AI" }], p.type, (v) => { p.type = v; cfg.onChange(); });
+        row1.append(name, type);
+        card.append(row1);
+        // sigil + slot
+        const row2 = el("div", "setup-row");
+        const sigilSel = select(cfg.sigils.map((s) => ({ value: String(s.ID), label: String(s.Name) })), p.sigilId, (v) => { p.sigilId = v; cfg.onChange(); });
+        row2.append(chip("Sigil", "muted"), sigilSel);
+        const slotSel = select(Array.from({ length: cfg.config.LINE_SIZE }, (_, k) => ({ value: String(k + 1), label: "Slot " + (k + 1) })), p.sigilSlot, (v) => { p.sigilSlot = v; cfg.onChange(); });
+        row2.append(slotSel);
+        card.append(row2);
+        if (p.sigilId) { const s = cfg.sigils.find((x) => String(x.ID) === String(p.sigilId)); if (s) card.append(el("div", "muted small", (s.Icon || "") + " " + s.Desc)); }
+        // contraband (pick 2)
+        const row3 = el("div", "setup-row");
+        const cbSel = select(cfg.contraband.map((c) => ({ value: String(c.ID), label: (c.Icon || "") + " " + c.Name + " (" + c.Class + ")" })), p.contrabandIds[0], (v) => { p.contrabandIds[0] = v; cfg.onChange(); });
+        const cbSel2 = select(cfg.contraband.map((c) => ({ value: String(c.ID), label: (c.Icon || "") + " " + c.Name + " (" + c.Class + ")" })), p.contrabandIds[1], (v) => { p.contrabandIds[1] = v; cfg.onChange(); });
+        row3.append(chip("Contraband", "muted"), cbSel, cbSel2);
+        card.append(row3);
+        const descs = p.contrabandIds.map((id) => { const c = cfg.contraband.find((x) => String(x.ID) === String(id)); return c && c.Desc; }).filter(Boolean);
+        if (descs.length) card.append(el("div", "muted small", descs.join(" · ")));
+      }
       setup.append(card);
     });
     app.append(setup);
+    if (waitingRemotes > 0) app.append(el("div", "banner", "\u23F3 " + waitingRemotes + " remote wizar" + (waitingRemotes === 1 ? "d" : "ds") + " ha" + (waitingRemotes === 1 ? "s" : "ve") + "n't sent a loadout yet \u2014 they'll get a random one if you start now."));
     const actions = el("div", "actions");
     if (cfg.onAddAi && cfg.players.length < cfg.config.MAX_PLAYERS) actions.append(btn("+ Add AI Wizard", "btn", cfg.onAddAi));
     actions.append(btn("Start Match", "btn primary big", cfg.onStart));
     app.append(actions);
+    root.append(app);
+  }
+
+  // ---------------- SELF-SETUP (client picks their own loadout) ----------------
+  // cfg = { config, sigils, contraband, self:{sigilId,sigilSlot,contrabandIds}, sent }
+  function renderSelfSetup(root, cfg) {
+    clear(root);
+    const s = cfg.self;
+    const app = el("div", "board");
+    app.append(brandHeader());
+    app.append(el("div", "subtitle", "Pick your own Sigil, finger slot, and two Contraband \u2014 then send it to the host."));
+    const card = el("div", "player-setup-card");
+    const row2 = el("div", "setup-row");
+    const sigilSel = select(cfg.sigils.map((x) => ({ value: String(x.ID), label: String(x.Name) })), s.sigilId, (v) => { s.sigilId = v; });
+    row2.append(chip("Sigil", "muted"), sigilSel);
+    const slotSel = select(Array.from({ length: cfg.config.LINE_SIZE }, (_, k) => ({ value: String(k + 1), label: "Slot " + (k + 1) })), s.sigilSlot, (v) => { s.sigilSlot = v; });
+    row2.append(slotSel);
+    card.append(row2);
+    if (s.sigilId) { const sig = cfg.sigils.find((x) => String(x.ID) === String(s.sigilId)); if (sig) card.append(el("div", "muted small", (sig.Icon || "") + " " + sig.Desc)); }
+    const row3 = el("div", "setup-row");
+    const cb1 = select(cfg.contraband.map((c) => ({ value: String(c.ID), label: (c.Icon || "") + " " + c.Name })), s.contrabandIds[0], (v) => { s.contrabandIds[0] = v; });
+    const cb2 = select(cfg.contraband.map((c) => ({ value: String(c.ID), label: (c.Icon || "") + " " + c.Name })), s.contrabandIds[1], (v) => { s.contrabandIds[1] = v; });
+    row3.append(chip("Contraband", "muted"), cb1, cb2);
+    card.append(row3);
+    const descs = s.contrabandIds.map((id) => { const c = cfg.contraband.find((x) => String(x.ID) === String(id)); return c && c.Desc; }).filter(Boolean);
+    if (descs.length) card.append(el("div", "muted small", descs.join(" · ")));
+    app.append(card);
+    const actions = el("div", "actions");
+    actions.append(btn(cfg.sent ? "Update loadout" : "Send loadout to host", "btn primary big", cfg.onSend));
+    app.append(actions);
+    if (cfg.sent) app.append(el("div", "banner", "\u2705 Loadout sent \u2014 the host has it. You can update it until they start."));
+    app.append(el("div", "muted small", "The host configures AI / the table; your loadout is yours alone."));
     root.append(app);
   }
 
@@ -270,6 +312,75 @@
     row.append(el("span", "status-hud-name", (e ? e.icon : "") + " " + name));
     row.append(el("span", "status-hud-desc", (e && e.desc) || ""));
     return row;
+  }
+
+  // ---- opponent intel: potential damage I deal + their DoT (last-known state) ----
+  function damageOfCard(caster, card, cfg) {
+    let dmg = Number(card.attributes.Damage) || 0;
+    if (dmg <= 0) return 0;
+    dmg += HS2.effects.damageBonusOf(caster);
+    if (caster.sigil && caster.sigil.BonusType === "damage" && !caster.sigilBroken &&
+        (card.elements || []).indexOf(caster.sigil.Require) !== -1 &&
+        HS2.game.slotElement(caster, caster.sigilSlot) === caster.sigil.Require) {
+      dmg += Number(caster.sigil.Amount) || 0;
+    }
+    (caster.contraband || []).forEach((c) => { if (c.passive && c.def.Type === "fireDmg" && (card.elements || []).indexOf("FIRE") !== -1) dmg += Number(c.def.Amount) || 0; });
+    return Math.round(dmg * (cfg.DAMAGE_MULTIPLIER || 1));
+  }
+  function cardTargetFor(state, caster, card) {
+    const scope = String(card.attributes.Target || "enemy").toLowerCase();
+    if (scope === "all") return "all";
+    if (scope === "self") return "self";
+    const tid = caster.targets && caster.targets[card.id];
+    if (tid) return tid;
+    const opps = state.players.filter((o) => o !== caster && o.alive);
+    return opps.length ? opps[0].id : null;
+  }
+  function threatTo(state, caster, targetId, cfg) {
+    let t = 0;
+    (caster.lineSet || []).forEach((card) => {
+      const tgt = cardTargetFor(state, caster, card);
+      if (tgt === "all" || tgt === targetId) t += damageOfCard(caster, card, cfg);
+    });
+    return t;
+  }
+  function debuffDot(target, cfg) {
+    let d = 0;
+    (target.debuffs || []).forEach((name) => { const e = HS2.effects.get(name); if (e && e.DamagePerTurn) d += e.DamagePerTurn; });
+    return d;
+  }
+  function renderOpponentIntel(container, p, state, cfg) {
+    const opps = state.players.filter((o) => o !== p && (o.alive || o.left));
+    if (!opps.length) return;
+    const box = el("div", "active-area");
+    box.append(el("div", "label", "Opponents \u2014 last known intel"));
+    const grid = el("div", "intel-grid");
+    opps.forEach((o) => {
+      const c = el("div", "intel-card" + (o.left ? " left" : ""));
+      const head = el("div", "intel-head");
+      head.append(el("span", "intel-name", o.name + (o.left ? " (left)" : "")));
+      head.append(el("span", "intel-hp", o.hp + "/" + o.maxHp + " HP"));
+      c.append(head);
+      c.append(el("div", "meters small", "Block " + o.block + " \u00b7 Thumbs " + o.triggerThumbs + " \u00b7 " + o.hand.length + " in hand"));
+      const tags = el("div", "status-tags");
+      (o.buffs || []).forEach((b) => tags.append(statusTag(b, "buff")));
+      (o.debuffs || []).forEach((b) => tags.append(statusTag(b, "debuff")));
+      if (tags.children.length) c.append(tags);
+      const cb = el("div", "intel-cb");
+      (o.contraband || []).forEach((it) => {
+        const st = it.passive ? "gear" : (it.fired ? "used" : (it.armed ? "armed" : "off"));
+        cb.append(el("span", "intel-cb-item", (it.def.Icon || "") + " " + it.def.Name + " (" + st + ")"));
+      });
+      if (cb.children.length) c.append(el("div", "muted small", cb));
+      const threat = threatTo(state, p, o.id, cfg);
+      const dot = debuffDot(o, cfg);
+      c.append(el("div", "intel-threat", (threat ? "You deal \u2248" + threat + " dmg" : "No damage lined up") + (dot ? " \u00b7 them DoT " + dot : "")));
+      c.append(el("div", "muted small", "Assuming they have no Block; Thumbs are a gamble."));
+      grid.append(c);
+    });
+    box.append(grid);
+    if (opps.some((o) => o.left)) box.append(el("div", "banner error", "One or more wizards left \u2014 their seat is removed."));
+    container.append(box);
   }
 
   // ---- Reference codex (all cards / buffs / debuffs / sigils / contraband) ----
@@ -460,6 +571,8 @@
     if (p.turnInBlock > 0) opts.append(el("div", "hint", "Turned in this round: +" + p.turnInBlock + " Block banked."));
     app.append(opts);
 
+    renderOpponentIntel(app, p, s, cfg);
+
     // Quick rules / reminder (collapsible)
     const rules = el("details", "rules");
     rules.append(el("summary", "", "? Rules & reminder"));
@@ -587,9 +700,9 @@
   }
 
   function renderPlayer(p, s, view) {
-    const node = el("div", "player-card" + (p.alive ? "" : " dead") + (s.phase === "reveal" ? " reveal-pop" : ""));
+    const node = el("div", "player-card" + (p.alive ? "" : " dead") + (p.left ? " left" : "") + (s.phase === "reveal" ? " reveal-pop" : ""));
     if (p.id === view.selfId) node.append(chip("YOU", "good"));
-    const pname = el("div", "pname", p.name + (p.alive ? "" : " ✕"));
+    const pname = el("div", "pname", p.name + (p.alive ? "" : " ✕") + (p.left ? " (left)" : ""));
     node.append(pname);
     const bar = el("div", "bar");
     const fill = el("div", "fill hp" + (p.hp / p.maxHp <= 0.35 ? " low" : ""));
@@ -623,5 +736,5 @@
   }
 
   window.HS2 = window.HS2 || {};
-  window.HS2.ui = { renderLobby, renderSetup, renderPlan, renderBoard, renderVictory, renderCard, statusTag };
+  window.HS2.ui = { renderLobby, renderSetup, renderSelfSetup, renderPlan, renderBoard, renderVictory, renderCard, statusTag };
 })();

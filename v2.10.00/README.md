@@ -45,6 +45,18 @@ New in v2.10.00:
 - **Playtester / bugfixer QOL** — `Clear line`, live deck count, a **State (debug)**
   JSON toggle with a **Copy state** button, and a `assets/` folder with pre-named
   favicon + logo placeholders for the artist.
+- **Anti-lock & leave handling** — when a wizard leaves/disconnects mid-session, the
+  host removes them from the game (`removePlayer`) and re-pumps the round so it can't
+  stall waiting on someone who'll never lock. A host-only **"Force reveal & resolve"**
+  button appears on the waiting screen, heartbeats detect silent drops, and a persistent
+  error banner surfaces any rules bug instead of freezing.
+- **Opponent intel (planning)** — see each opponent's last known HP / Block / Trigger
+  Thumbs / hand size, active buffs & afflictions, Contraband with its `[armed|used|gear]`
+  state, how much damage you'd deal to them (assuming no Block), and their current Debuff
+  DoT.
+- **Fair self-serve loadouts** — in P2P the host no longer picks your Sigil / slot /
+  Contraband. Each client sets up their own wizard and sends it to the host; the host only
+  configures AI. Non-host loadouts default to a random one so nothing ever stalls.
 
 ---
 
@@ -62,8 +74,9 @@ python -m http.server 8080
 - **Local Match (vs AI)** — fastest way to see the engine: set up 2–4 wizards,
   each Human/AI, pick Sigil + slot + 2 Contraband, then Start.
 - **Host Game / Connect** — PeerJS P2P (free cloud broker). Host configures the
-  table; clients join with the code, plan their line, and lock in. The host reveals
-  and resolves once everyone has locked.
+  table + AI; each human wizard picks their own Sigil / slot / Contraband and sends it
+  to the host. Everyone plans their line, locks in, and the host reveals + resolves once
+  everyone has locked.
 
 
 ---

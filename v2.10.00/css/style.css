@@ -139,6 +139,7 @@ input[type="text"], select {
   background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; position: relative;
 }
 .player-card.dead { opacity: .5; filter: grayscale(.6); }
+.player-card.left { opacity: .5; filter: grayscale(.8); border-color: var(--danger); }
 .player-card.reveal-pop { animation: pop .45s ease; }
 .pname { margin: 0 0 8px; font-size: 18px; }
 .bar { height: 10px; background: #0e0b16; border-radius: 6px; overflow: hidden; margin-top: 4px; }
@@ -231,3 +232,25 @@ input[type="text"], select {
 .codex-item-head { font-weight: 700; font-size: 13px; }
 .codex-item-desc { font-size: 12px; color: var(--muted); }
 .codex-item-meta { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* Opponent intel panel (planning) */
+.intel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.intel-card {
+  background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.intel-card.left { opacity: .55; filter: grayscale(.7); border-color: var(--danger); }
+.intel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.intel-name { font-weight: 700; }
+.intel-hp { color: #8be2b0; font-weight: 700; white-space: nowrap; }
+.intel-cb { display: flex; flex-wrap: wrap; gap: 4px; }
+.intel-cb-item { font-size: 11px; background: #1a1426; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+.intel-threat { font-size: 12px; font-weight: 600; color: var(--accent); }
+
+/* Fault banner (uncaught error surfacing) */
+#fault {
+  position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999;
+  background: #3a1010; border: 1px solid #7a2f2f; color: #ffb4ad; padding: 8px 14px;
+  border-radius: 10px; font-size: 13px; font-weight: 600; max-width: 90vw;
+  box-shadow: 0 6px 18px rgba(0,0,0,.5);
+}

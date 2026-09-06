@@ -26,14 +26,34 @@
     timerId: null,            // planning countdown handle
     timerDeadline: 0, timerRemain: null, timerRound: 0,
     debugOpen: false,         // show raw STATE JSON (playtester / bugfixer)
+    remoteSetups: {},         // host: playerId -> { sigilId, sigilSlot, contrabandIds }
+    selfSetup: null,          // client: this wizard's selected loadout
+    selfSetupDone: false,     // client: sent loadout to host
   };
   window.HS2 = window.HS2 || {};
   window.HS2.app = app;
+
+  // ---- error surfacing (playtester / bugfixer) ----
+  function reportFault(msg) {
+    console.error("[hood-sorcery] " + msg);
+    const box = document.getElementById("fault");
+    if (box) {
+      box.hidden = false;
+      box.textContent = "⚠ " + msg + " (see console)";
+      box.className = "fault";
+    }
+  }
+  function safe(fn, label) {
+    try { return fn(); }
+    catch (e) { reportFault((label || "step") + " failed: " + (e && e.message ? e.message : e)); return null; }
+  }
 
   const U = () => HS2.ui;
 
   // ---------- boot ----------
   async function boot() {
+    window.addEventListener("error", (ev) => { if (ev && ev.message) reportFault(ev.message); });
+    window.addEventListener("unhandledrejection", (ev) => { if (ev && ev.reason) reportFault("Promise rejection: " + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason)); });
     renderLobby();
     try {
       const d = await HS2.loader.loadData();
@@ -70,22 +90,85 @@
     app.setupOrigin = origin; // 'local' | 'host'
     if (!app.playersCfg.length) {
       if (origin === "host" && app.roster.length) {
-        app.playersCfg = app.roster.filter((p) => !p.left).slice(0, 4).map((p, i) => defaultCfg(p.id, p.name, "human", i));
+        app.playersCfg = app.roster.filter((p) => !p.left).slice(0, app.config.MAX_PLAYERS).map((p, i) => {
+          const cfg = defaultCfg(p.id, p.name, "human", i);
+          if (p.id !== "host") {
+            // Remote human wizards pick their OWN loadout and send it to the host.
+            cfg.remote = true;
+            const rs = app.remoteSetups[p.id];
+            cfg.setupReady = !!rs;
+            applyLoadout(cfg, rs || randomLoadout());
+          } else { cfg.setupReady = true; }
+          return cfg;
+        });
       } else {
         app.playersCfg = [defaultCfg("local0", "Wizard 1", "human", 0), defaultCfg("local1", "Wizard 2", "ai", 1)];
+        // Auto-randomise non-host loadouts so the host doesn't hand-pick for them.
+        app.playersCfg.forEach((c, i) => { if (i > 0) applyLoadout(c, randomLoadout()); });
       }
     }
+    // Ask clients to open their own loadout picker (host -> all).
+    if (origin === "host" && app.role === "host" && app.network) app.network.broadcast("SETUP_REQUEST", {});
     renderSetup();
   }
 
   function defaultCfg(id, name, type, i) {
     const sig = app.data.sigils[i % app.data.sigils.length];
     return {
-      id, name, type,
+      id, name, type, remote: false, setupReady: false,
       sigilId: sig ? String(sig.ID) : null,
       sigilSlot: 1 + (i % app.config.LINE_SIZE),
       contrabandIds: app.data.contraband.slice(0, 2).map((c) => String(c.ID)),
     };
+  }
+
+  // Random loadout (fair for a wizard the host isn't hand-picking for).
+  function randomLoadout() {
+    const sig = app.data.sigils[Math.floor(Math.random() * app.data.sigils.length)];
+    const cb = app.data.contraband.slice().sort(() => Math.random() - 0.5).slice(0, 2).map((c) => String(c.ID));
+    return { sigilId: sig ? String(sig.ID) : null, sigilSlot: 1 + Math.floor(Math.random() * app.config.LINE_SIZE), contrabandIds: cb };
+  }
+  function applyLoadout(cfg, l) {
+    if (!l) return;
+    if (l.sigilId != null && l.sigilId !== "") cfg.sigilId = String(l.sigilId);
+    if (l.sigilSlot != null && l.sigilSlot !== "") cfg.sigilSlot = Number(l.sigilSlot);
+    if (Array.isArray(l.contrabandIds)) cfg.contrabandIds = l.contrabandIds.map(String);
+  }
+  // Host applies a client's self-served loadout to the matching wizard.
+  function applyRemoteSetup(playerId, data) {
+    if (!data) return;
+    app.remoteSetups[playerId] = data;
+    const cfg = app.playersCfg.find((c) => String(c.id) === String(playerId));
+    if (cfg) { applyLoadout(cfg, data); cfg.setupReady = true; if (app.mode === "setup") renderSetup(); }
+  }
+
+  // ---- client self-serve loadout (each wizard configures their own) ----
+  function openSelfSetup() {
+    if (app.role !== "client") return;
+    app.mode = "selfSetup";
+    if (!app.selfSetup) {
+      const sig = app.data.sigils[Math.floor(Math.random() * app.data.sigils.length)];
+      app.selfSetup = {
+        sigilId: sig ? String(sig.ID) : null,
+        sigilSlot: 1 + Math.floor(Math.random() * app.config.LINE_SIZE),
+        contrabandIds: app.data.contraband.slice(0, 2).map((c) => String(c.ID)),
+      };
+    }
+    U().renderSelfSetup(app.root(), {
+      config: app.config, sigils: app.data.sigils, contraband: app.data.contraband,
+      self: app.selfSetup, sent: app.selfSetupDone,
+      onSend: () => submitSelfSetup(),
+    });
+  }
+  function submitSelfSetup() {
+    if (app.role !== "client" || !app.network) return;
+    app.network.sendSetup({
+      sigilId: String(app.selfSetup.sigilId),
+      sigilSlot: Number(app.selfSetup.sigilSlot),
+      contrabandIds: app.selfSetup.contrabandIds.map(String),
+    });
+    app.selfSetupDone = true;
+    openSelfSetup();
   }
 
     function renderSetup() {
@@ -216,8 +299,9 @@
     // Auto-plan AI players.
     s.players.forEach((p) => {
       if (p.alive && p.type === "ai" && !p.locked) {
-        HS2.ai.planAI(s, p);
-        HS2.game.lockPlayer(s, p.id);
+        safe(() => HS2.ai.planAI(s, p), "ai plan");
+
+        safe(() => HS2.game.lockPlayer(s, p.id), "ai lock");
       }
     });
 
@@ -243,13 +327,43 @@
     const s = app.gameState;
     if (!HS2.game.allLocked(s)) return;
     HS2.sfx.reveal();
-    HS2.resolution.resolve(s);
+    // Wrap resolve so a rules bug never wedges the round.
+    if (safe(() => HS2.resolution.resolve(s), "resolve") === null) { s.phase = "reveal"; }
     if (s.phase !== "gameOver") s.phase = "reveal";
     if (s.phase === "gameOver") HS2.sfx.win();
     if (app.role === "host" || app.role === "solo") {
       app.network && app.network.broadcast("STATE", { state: HS2.game.serialize(s) });
     }
     renderBoard();
+  }
+
+  // Host fail-safe: lock every un-locked alive wizard (AI auto-planned; humans pass
+  // their current line) and reveal. Never lets a disconnected wizard stall the game.
+  function forceResolve() {
+    const s = app.gameState;
+    if (!s || s.phase !== "planning") { renderBoard(); return; }
+    stopPlanTimer();
+    s.players.forEach((p) => {
+      if (!p.alive || p.locked) return;
+      if (p.type === "ai") safe(() => HS2.ai.planAI(s, p), "ai plan (force)");
+      safe(() => HS2.game.lockPlayer(s, p.id), "lock (force)");
+    });
+    HS2.sfx.lock();
+    allLockedResolve();
+  }
+
+  // A wizard left the session: drop them from the game so the round can't block.
+  // During planning we broadcast a lightweight PLAYER_LEFT (NOT a full STATE) so
+  // clients keep their in-progress plan; the host re-pumps to try to resolve.
+  function handlePeerLeft(info) {
+    const s = app.gameState;
+    if (!s) { if (app.network) app.roster = app.network.roster; renderLobby(); return; }
+    const removed = HS2.game.removePlayer(s, info.id);
+    if (removed && (app.role === "host" || app.role === "solo")) {
+      if (app.network) app.network.broadcast("PLAYER_LEFT", { id: info.id, name: info.name });
+      if (s.phase === "planning") { stopPlanTimer(); stepPlanner(); }
+      else renderBoard();
+    }
   }
 
   // ---- planning countdown timer (config PLAN_TIMER seconds; 0 = off) ----
@@ -291,8 +405,8 @@
     s.players.forEach((p) => {
       if (!p.alive || p.locked) return;
       if (!locallyControlled(p)) return;
-      if (p.type === "ai") HS2.ai.planAI(s, p);
-      HS2.game.lockPlayer(s, p.id);
+      if (p.type === "ai") safe(() => HS2.ai.planAI(s, p), "ai plan (timer)");
+      safe(() => HS2.game.lockPlayer(s, p.id), "lock (timer)");
     });
     HS2.sfx.lock();
     stepPlanner();
@@ -347,6 +461,15 @@
     const b = document.createElement("div"); b.className = "banner";
     b.textContent = "Waiting for " + name + " to lock in their line…";
     wrap.append(b);
+    if (app.role === "host" || app.role === "solo") {
+      const fb = document.createElement("button");
+      fb.className = "btn primary big"; fb.textContent = "Force reveal & resolve (host)";
+      fb.addEventListener("click", () => forceResolve());
+      wrap.append(fb);
+      const note = document.createElement("div"); note.className = "muted small";
+      note.textContent = "If a wizard disconnected or left, this locks their current/empty line and reveals the round so the game can't stall.";
+      wrap.append(note);
+    }
     root.append(wrap);
   }
 
@@ -395,6 +518,7 @@
     stopPlanTimer();
     app.gameState = null; app.codexOpen = false; app.codexTab = "cards"; app.waiting = false; app.plannerId = null;
     app.timerRemain = null; app.timerRound = 0; app.debugOpen = false;
+    app.playersCfg = []; app.remoteSetups = {}; app.selfSetup = null; app.selfSetupDone = false;
     app.mode = "lobby";
     if (app.network && app.network.role === "host") app.network.broadcast("RESET", {});
     if (app.role) { app.roster = app.network.roster; app.selfId = app.network.selfId; app.status = "lobby"; }
@@ -410,7 +534,7 @@
     nw.on("joined", () => { app.role = "client"; app.code = nw.code; app.selfId = nw.selfId; app.roster = nw.roster; app.status = "joined"; renderLobby(); });
     nw.on("roster", (r) => { app.roster = r; renderLobby(); });
     nw.on("disconnected", () => { app.status = "disconnected"; renderLobby(); });
-    nw.on("peer-left", () => { renderLobby(); });
+    nw.on("peer-left", (info) => { handlePeerLeft(info); });
 
     // Host is authoritative: it receives START (self no-op), STATE (no-op), ACTION (LOCK).
     nw.on("STATE", (d) => {
@@ -431,6 +555,19 @@
       // Only push a STATE once the reveal happens (all locked). During planning,
       // clients keep their own in-progress plan; broadcasting would clobber it.
       if (res.ok && res.allLocked) allLockedResolve();
+    });
+    // Client -> host self-served loadout (each wizard picks their own sigil/slot/contraband).
+    nw.on("SETUP", (data, fromId) => { if (app.role === "host") applyRemoteSetup(fromId, data); });
+    // Host asks clients to open their self-setup screen.
+    nw.on("SETUP_REQUEST", () => { if (app.role === "client") openSelfSetup(); });
+    // A remote wizard left while we're planning: mark them out WITHOUT clobbering
+    // our own in-progress plan.
+    nw.on("PLAYER_LEFT", (data) => {
+      if (app.role === "client" && app.gameState) {
+        HS2.game.removePlayer(app.gameState, data.id);
+        if (app.gameState.phase === "planning") renderPlan(app.selfId);
+        else renderBoard();
+      }
     });
     nw.on("RESET", () => { app.gameState = null; app.role = "client"; app.status = "joined"; renderLobby(); });
   }

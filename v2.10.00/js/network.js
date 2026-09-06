@@ -71,6 +71,8 @@
   Network.prototype.setStatus = function (s) { if (this.onStatus) this.onStatus(s); };
 
   Network.prototype.destroy = function () {
+    if (this._hb) clearInterval(this._hb);
+    if (this._chb) clearInterval(this._chb);
     if (this.peer) this.peer.destroy();
     this.peer = null;
   };
@@ -109,7 +111,26 @@
       if (opts.onError) opts.onError(err);
     });
 
+    self.startHeartbeat();
+
     return this;
+  };
+
+  // Host heartbeat: ping every conn; drop a client that goes silent (close/error
+  // can be missed if the tab dies without a clean WebRTC close). Prevents the host
+  // waiting forever on someone who already left.
+  Network.prototype.startHeartbeat = function () {
+    const self = this;
+    if (this._hb) clearInterval(this._hb);
+    this._hb = setInterval(function () {
+      const now = Date.now();
+      self.conns.forEach(function (c) {
+        if (!c.meta) return;
+        if (!c.meta.lastAck) c.meta.lastAck = now;
+        if (now - c.meta.lastAck > 15000) { self.dropClient(c); return; }
+        self.reply(c, "PING", { t: now });
+      });
+    }, 5000);
   };
 
   function assignClientId(self) {
@@ -123,10 +144,11 @@
     const msg = parse(d);
     if (!msg || !msg.type) return;
     const data = msg.data || {};
+    if (conn.meta) conn.meta.lastAck = Date.now();   // heartbeat freshness
 
     if (msg.type === "JOIN") {
       const id = assignClientId(this);
-      conn.meta = { id: id, name: data.name || ("Player " + id), connected: true };
+      conn.meta = { id: id, name: data.name || ("Player " + id), connected: true, lastAck: Date.now() };
       this.conns.push(conn);
       this.roster.push({ id: id, name: conn.meta.name, connected: true });
       // Tell the new client who it is.
@@ -137,8 +159,9 @@
       return;
     }
 
-    // Anything else a client sends is an app-level message we forward up.
-    this.emit(msg.type, data, msg.from || "client");
+    // Anything else a client sends is an app-level message we forward up, tagged
+    // with the sender's assigned id (so SETUP / ACTION can be attributed).
+    this.emit(msg.type, data, (conn.meta && conn.meta.id) || msg.from || "client");
   };
 
   Network.prototype.dropClient = function (conn) {
@@ -146,12 +169,15 @@
     if (!rec) return;
     this.conns = this.conns.filter((c) => c !== conn);
     const id = (conn.meta && conn.meta.id) || null;
+    const name = (conn.meta && conn.meta.name) || null;
     if (id) {
-      const p = this.roster.find((x) => x.id === id);
-      if (p) { p.connected = false; p.left = true; }
+      // Remove the departed player from the lobby roster so stale entries don't
+      // linger. The controller still receives "peer-left" to drop them from an
+      // in-progress game (issue: left players block the round forever).
+      this.roster = this.roster.filter((x) => x.id !== id);
       this.broadcast("ROSTER", { players: this.roster });
       this.emit("roster", this.roster);
-      this.emit("peer-left", { id: id });
+      this.emit("peer-left", { id: id, name: name });
     }
   };
 
@@ -180,14 +206,30 @@
     });
 
     peer.on("error", function (err) { self.setStatus("error"); if (opts.onError) opts.onError(err); });
+    self.startClientHeartbeat();
     return this;
+  };
+
+  // Client never blocks the round: if the host goes silent, surface "disconnected".
+  Network.prototype.startClientHeartbeat = function () {
+    const self = this;
+    if (this._chb) clearInterval(this._chb);
+    this._lastHostSeen = Date.now();
+    this._chb = setInterval(function () {
+      if (Date.now() - self._lastHostSeen > 15000) {
+        self.setStatus("disconnected");
+        self.emit("disconnected", {});
+      }
+    }, 5000);
   };
 
   Network.prototype.handleClientData = function (d) {
     const msg = parse(d);
     if (!msg || !msg.type) return;
     const data = msg.data || {};
+    this._lastHostSeen = Date.now();
 
+    if (msg.type === "PING") { this.reply(this.conn, "PONG", { t: data.t }); return; }
     if (msg.type === "WELCOME") {
       this.selfId = data.selfId;
       this.code = data.code;
@@ -200,7 +242,7 @@
       this.emit("roster", this.roster);
       return;
     }
-    // Everything else (START / STATE / RESET / CHAT / ...) is app-level.
+    // Everything else (START / STATE / RESET / CHAT / SETUP_REQUEST / ...) is app-level.
     this.emit(msg.type, data, "host");
   };
 
@@ -218,6 +260,11 @@
   // Client -> host action payload.
   Network.prototype.sendAction = function (payload) {
     if (this.role === "client" && this.conn) this.reply(this.conn, "ACTION", payload);
+  };
+
+  // Client -> host self-served loadout (sigil / slot / 2 contraband).
+  Network.prototype.sendSetup = function (setup) {
+    if (this.role === "client" && this.conn) this.reply(this.conn, "SETUP", setup);
   };
 
   // Any player -> all (host relays; clients just send to host). Used for chat/log.
