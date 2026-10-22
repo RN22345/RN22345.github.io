@@ -405,6 +405,145 @@ label.lab{display:grid;gap:4px;font-size:12px;color:var(--muted);font-weight:600
 }
 @media (min-width:701px){ #kittabs{display:none} }
 </style>
+<style id="polish-css">
+/* ===== Polish layer: motion, drag-and-drop, card picker. All motion is switched off under prefers-reduced-motion. ===== */
+:root{--ease-out:cubic-bezier(.2,.85,.25,1);--ease-spring:cubic-bezier(.25,1.45,.45,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes popIn{0%{opacity:0;transform:scale(.7)}60%{opacity:1;transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes chipIn{0%{opacity:0;transform:translateY(-10px) scale(.92)}60%{opacity:1;transform:translateY(2px) scale(1.02)}100%{transform:none}}
+@keyframes chipDrop{0%{box-shadow:0 0 0 0 rgba(233,199,90,.9)}60%{transform:scale(1.025)}100%{box-shadow:0 0 0 14px rgba(233,199,90,0);transform:none}}
+@keyframes chipOut{to{opacity:0;transform:translateX(24px) scale(.9)}}
+@keyframes bumpNum{0%{transform:scale(1)}35%{transform:scale(1.45);color:var(--gold-hi)}100%{transform:scale(1)}}
+@keyframes lowPulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes shake{0%,100%{translate:0}20%{translate:-5px}40%{translate:5px}60%{translate:-3px}80%{translate:3px}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,16px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,10px)}}
+@keyframes slideL{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 2px rgba(233,199,90,.35),0 0 0 rgba(233,199,90,0)}50%{box-shadow:0 0 0 2px rgba(233,199,90,.7),0 0 26px rgba(233,199,90,.35)}}
+
+.view.on{animation:viewIn .34s var(--ease-out)}
+
+/* scroll progress */
+.sprog{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);z-index:70;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-hi));transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
+
+/* press feedback + hover lifts */
+.btn,.seg button,.tabs a,.track button,.ttok,.die,.stepper button,.chip .x button,.seattabs button{transition:transform .14s var(--ease-out),background-color .18s,border-color .18s,color .18s,box-shadow .2s}
+.btn:active,.seg button:active,.stepper button:active,.track button:active,.seattabs button:active{transform:scale(.95)}
+.btn.gold:hover{box-shadow:0 4px 18px rgba(201,162,39,.35)}
+.seg button[aria-pressed="true"]{box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+.tabs a:hover{transform:translateY(-1px)}
+.brand svg{transition:transform .4s var(--ease-spring)}
+.brand:hover svg{transform:rotate(-8deg) scale(1.12)}
+.panel,.kpi,.ties div,.pod{transition:transform .25s var(--ease-out),box-shadow .25s,border-color .25s}
+.ties div:hover,.kpi:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.pod:hover{transform:translateY(-4px)}
+.pod.win{animation:glow 3s ease-in-out infinite}
+
+/* world + crews */
+.lineup img{animation:bob 5.5s ease-in-out infinite}
+.lineup img:nth-child(2){animation-delay:-1.4s}.lineup img:nth-child(3){animation-delay:-2.8s}.lineup img:nth-child(4){animation-delay:-4.1s}
+.hero h1{background:linear-gradient(100deg,var(--gold-hi) 30%,#fff3c4 50%,var(--gold-hi) 70%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 7s linear infinite;text-shadow:none;filter:drop-shadow(0 4px 24px rgba(0,0,0,.6))}
+.crew{transition:transform .3s var(--ease-out),box-shadow .3s,border-color .3s}
+.crew:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 16px 36px rgba(0,0,0,.5)}
+.crew .art img{transition:transform .45s var(--ease-out)}
+.crew:hover .art img{transform:translateX(-50%) scale(1.07) translateY(-4px)}
+.rv{opacity:0;transform:translateY(20px)}
+.rv.in{opacity:1;transform:none;transition:opacity .55s var(--ease-out),transform .55s var(--ease-out)}
+
+/* spell deck cards: tilt + shine on hover-capable devices */
+#deckgrid .card,.pkc .card{transition:transform .25s var(--ease-out),box-shadow .25s;transform-style:preserve-3d;position:relative}
+#deckgrid .card{animation:rise .42s var(--ease-out) both;animation-delay:calc(var(--i,0) * 16ms)}
+@media (hover:hover){
+  #deckgrid .card:hover{transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-6px) scale(1.03);box-shadow:0 14px 30px rgba(0,0,0,.55)}
+  #deckgrid .card::after{content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,255,255,.28),transparent 55%)}
+  #deckgrid .card:hover::after{opacity:1}
+}
+
+/* helper: numbers, timer, tracks */
+.bump{display:inline-block;animation:bumpNum .5s var(--ease-spring)}
+.timer.low,.bigtimer .t.low{animation:lowPulse 1s ease-in-out infinite}
+.timer.out,.bigtimer .t.out{animation:shake .5s}
+.tbar i{transition:width .25s linear,background-color .4s}
+.track button{transition:transform .2s var(--ease-spring),background .3s,border-color .3s,color .3s}
+.track button.cur{animation:glow 2.6s ease-in-out infinite}
+.pcard{transition:border-color .25s,box-shadow .25s}
+.pcard.sel.slide-l{animation:slideL .3s var(--ease-out)}
+.pcard.sel.slide-r{animation:slideR .3s var(--ease-out)}
+.totals div{transition:border-color .25s,background .25s}
+.totals div.badl{animation:lowPulse 1.4s ease-in-out infinite}
+.tok{transition:background .3s,opacity .3s,transform .3s var(--ease-spring)}
+.tok.spent{transform:scale(.8)}
+.toast{animation:toastIn .3s var(--ease-spring) both;display:flex;align-items:center;gap:12px}
+.toast.out{animation:toastOut .22s ease-in forwards}
+.toast-act{border:0;background:rgba(34,24,12,.88);color:var(--gold-hi);font-weight:700;padding:5px 12px;border-radius:999px;font-size:13px}
+.toast-act:hover{background:var(--ink)}
+.ov.on{animation:fadeIn .22s}
+.wres img,.wheelnow .disc{animation:popIn .5s var(--ease-spring)}
+
+/* ===== chips: grip, drag and drop ===== */
+.chip{position:relative;-webkit-touch-callout:none;transition:box-shadow .2s,border-color .2s,background-color .2s}
+.chip.ed{grid-template-columns:auto auto 1fr auto;padding-left:2px;user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:grab}
+.chip.c-fire{border-left:3px solid var(--p1)}.chip.c-water{border-left:3px solid var(--p2)}.chip.c-earth{border-left:3px solid var(--p3)}.chip.c-wind{border-left:3px solid var(--p4)}
+.chip .grip{display:grid;place-items:center;min-width:24px;min-height:40px;border-radius:6px;color:var(--faint);font-size:17px;line-height:1;letter-spacing:-3px;cursor:grab;touch-action:none;transition:color .15s,background-color .15s}
+.chip .grip:hover,.chip .grip:focus-visible{color:var(--gold-hi);background:var(--plum-3)}
+.chip.ed:hover{border-color:var(--gold-dim)}
+.chip.enter{animation:chipIn .4s var(--ease-spring)}
+.chip.drop{animation:chipDrop .55s var(--ease-out)}
+.chip.leaving{animation:chipOut .17s ease-in forwards;pointer-events:none}
+.chips.sorting .chip:not(.dragging){transition:transform .24s var(--ease-out)}
+.chips.sorting .seam{opacity:0;transition:opacity .12s}
+.chip.dragging{z-index:30;cursor:grabbing;background:var(--plum-2);border-color:var(--gold-hi);box-shadow:0 18px 36px rgba(0,0,0,.65),0 0 0 2px var(--gold-hi);will-change:transform;transition:box-shadow .15s}
+.chip.dragging .grip{color:var(--gold-hi)}
+.chip.settling{transition:transform .2s var(--ease-out),box-shadow .2s !important}
+.seam.seam-in{animation:fadeIn .4s .05s both}
+.draghint{font-size:11px;color:var(--faint);text-align:center;letter-spacing:.4px;padding:2px 0}
+body.is-dragging,body.is-dragging *{cursor:grabbing !important;user-select:none !important;-webkit-user-select:none !important}
+.addrow{grid-template-columns:1fr auto auto}
+.addrow .btn.ghost{padding-inline:11px}
+@media (min-width:701px){.addrow{grid-template-columns:1fr 1fr}.addrow input{grid-column:1/-1}}
+
+/* ===== card picker sheet ===== */
+.pk{position:fixed;inset:0;z-index:85;display:none;align-items:flex-end;justify-content:center;background:rgba(10,4,18,.74);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.pk.on{display:flex;animation:fadeIn .2s}
+.pksheet{width:min(960px,100%);max-height:90vh;max-height:90dvh;display:flex;flex-direction:column;background:var(--plum);border:1px solid var(--gold);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -12px 50px rgba(0,0,0,.6);animation:sheetUp .32s var(--ease-out);overflow:hidden}
+.pkhd{padding:12px 14px 10px;border-bottom:1px solid var(--gold-dim);display:grid;gap:10px}
+.pkgrab{width:42px;height:4px;border-radius:99px;background:var(--gold-dim);justify-self:center;margin-bottom:-2px}
+.pktop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pktop h3{font-size:18px;color:var(--gold-hi)}
+.pkline{display:flex;gap:6px;flex-wrap:wrap;min-height:34px;align-items:center}
+.pkline .m{display:inline-flex;align-items:center;gap:6px;background:var(--night);border:1px solid var(--gold-dim);border-radius:999px;padding:3px 4px 3px 9px;font-size:12.5px;animation:popIn .3s var(--ease-spring)}
+.pkline .m b{font-family:var(--serif);color:var(--gold-hi)}
+.pkline .m button{border:0;background:var(--plum-3);color:var(--muted);width:20px;height:20px;border-radius:50%;font-size:11px;padding:0}
+.pkline .m button:hover{color:#fff}
+.pkline .sm2{color:var(--good);font-size:11.5px;font-weight:700}
+.pkfilters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pkfilters input{flex:1;min-width:140px}
+.pkgrid{overflow:auto;-webkit-overflow-scrolling:touch;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px;overscroll-behavior:contain;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.pkc{background:none;border:0;padding:0;text-align:left;position:relative;border-radius:11px;display:block;transition:transform .16s var(--ease-out),opacity .2s}
+.pkc:hover{transform:translateY(-3px)}
+.pkc:active{transform:scale(.95)}
+.pkc.used{opacity:.42}
+.pkc.in .card{box-shadow:0 0 0 3px var(--gold-hi),0 0 22px rgba(233,199,90,.45)}
+.pkc.seamok .card{box-shadow:0 0 0 2px var(--good),0 0 16px rgba(111,207,134,.45)}
+.pkc .bdg{position:absolute;top:-6px;right:-6px;z-index:2;background:var(--gold);color:var(--ink);font-family:var(--serif);font-weight:700;min-width:24px;height:24px;border-radius:99px;display:grid;place-items:center;font-size:13px;padding:0 6px;box-shadow:0 2px 8px rgba(0,0,0,.5);animation:popIn .3s var(--ease-spring)}
+.pkc .bdg.g{background:var(--good)}
+.pkc .bdg.u{background:var(--faint);color:#fff;font-size:10.5px;font-family:var(--sans)}
+.pkempty{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px 0}
+@media (min-width:701px){.pk{align-items:center;padding:24px}.pksheet{border-radius:16px;border-bottom:1px solid var(--gold);max-height:86vh}.pkgrab{display:none}}
+body.noscroll{overflow:hidden}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .rv{opacity:1;transform:none}
+}
+@media print{.rv{opacity:1 !important;transform:none !important}.sprog{display:none}}
+</style>
 <div class="bgart" aria-hidden="true"></div>
 <header class="bar">
   <div class="wrap">
@@ -928,7 +1067,13 @@ function loadSaved(){ try { const s = localStorage.getItem(KEY); if (!s) return 
 function validGame(g){ return g && g.v === 1 && Array.isArray(g.rounds) && g.rounds.length === 8 && Array.isArray(g.names); }
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-function toast(msg){ const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+function toast(msg, act){
+  $$('.toast').forEach(x => x.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); const m = document.createElement('span'); m.textContent = msg; t.appendChild(m);
+  const out = () => { t.classList.add('out'); setTimeout(() => t.remove(), 230); };
+  if (act) { const b = document.createElement('button'); b.className = 'toast-act'; b.textContent = act.label; b.onclick = () => { act.fn(); out(); }; t.appendChild(b); }
+  document.body.appendChild(t); setTimeout(out, act ? 5200 : 2600);
+}
 const CROWN = '<svg class="crown" viewBox="0 0 24 18" aria-hidden="true"><path d="M1 5l5 5 6-9 6 9 5-5-2 12H3z" fill="#c9a227"/><rect x="3" y="15" width="18" height="2.4" fill="#e0bd4a"/></svg>';
 const elIcon = (el, cls='') => `<span class="el ${cls}" data-el="${el}" title="${EL_NAME[el]}"></span>`;
 
@@ -968,6 +1113,7 @@ function renderDeck(){
   if (o === 'len') list.sort((a,b) => a.len - b.len || a.n - b.n);
   $('#deckgrid').innerHTML = list.map(cardHTML).join('') || '<p class="muted">No cards match. Clear a filter to see more.</p>';
   $('#dcount').textContent = `${list.length} of 72`;
+  $$('#deckgrid .card').forEach((c, i) => c.style.setProperty('--i', Math.min(i, 30)));
 }
 
 /* ================= ROUTER ================= */
@@ -982,6 +1128,7 @@ function go(v, push=true){
   if (v === 'helper') renderHelper();
   if (v === 'kit') { renderKit(); kitWheel.draw(); }
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  revealScan();
 }
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-nav]');
@@ -1079,7 +1226,9 @@ function renderHelper(){
   else if (G.sub === 'sheet') h += sheetView(C);
   else if (G.sub === 'analysis') h += analysisView(C);
   else h += setupView();
+  const _ctx = G.sub + '|' + G.view, _pb = snapBumps(host, _ctx);
   host.innerHTML = h;
+  applyBumps(host, _pb, _ctx);
   if (G.sub === 'analysis') drawChartsOnScreen(C);
   paintClock();
   if (aid) { const el = document.getElementById(aid); if (el) { el.focus({preventScroll:true}); try { if (sel != null && el.setSelectionRange) el.setSelectionRange(sel, sel); } catch(e){} } }
@@ -1150,11 +1299,13 @@ function playView(C){
 function chipsHTML(pr, e, owner, maxCards, editable=true){
   let h = '<div class="chips">';
   e.cards.forEach((c, k) => {
-    if (k > 0) { const s = e.seamList[k-1]; h += s ? `<div class="seam">${elIcon(s.el)}${elIcon(s.el)} seam · +1 ${s.stat}, −1 length</div>` : `<div class="seam none">no seam</div>`; }
-    h += `<div class="chip">${elIcon(c.s)}<span class="cn"><b>P${String(c.n).padStart(2,'0')}</b>${esc(c.name)}<br><span class="cs">${EL_NAME[c.s]}→${EL_NAME[c.e]} · L${c.len} · ${c.atk} ATK / ${c.blk} BLK</span></span>
-      ${editable ? `<span class="x">${k > 0 ? `<button data-act="mvcard" data-o="${owner}" data-k="${k}" aria-label="Move left">◀</button>` : ''}<button data-act="rmcard" data-o="${owner}" data-k="${k}" aria-label="Remove">✕</button></span>` : ''}</div>`;
+    if (k > 0) { const s = e.seamList[k-1]; const sx = FX.seam === owner ? ' seam-in' : ''; h += s ? `<div class="seam${sx}">${elIcon(s.el)}${elIcon(s.el)} seam · +1 ${s.stat}, −1 length</div>` : `<div class="seam none${sx}">no seam</div>`; }
+    const fx = FX.chip && FX.chip.o === owner && FX.chip.k === k ? ' ' + FX.chip.type : '';
+    h += `<div class="chip c-${c.s}${editable ? ' ed' : ''}${fx}" data-chip="${k}" data-o="${owner}">${editable ? `<span class="grip" data-grip role="button" tabindex="0" aria-label="Reorder card ${k+1}: drag, or use the arrow keys" title="Drag to reorder">⋮⋮</span>` : ''}${elIcon(c.s)}<span class="cn"><b>P${String(c.n).padStart(2,'0')}</b>${esc(c.name)}<br><span class="cs">${EL_NAME[c.s]}→${EL_NAME[c.e]} · L${c.len} · ${c.atk} ATK / ${c.blk} BLK</span></span>
+      ${editable ? `<span class="x"><button data-act="rmcard" data-o="${owner}" data-k="${k}" aria-label="Remove">✕</button></span>` : ''}</div>`;
   });
-  if (editable && e.cards.length < 4) h += `<div class="addrow"><input class="f" id="add-${owner}" list="cardlist" inputmode="numeric" enterkeyhint="done" data-ch="addcard" data-o="${owner}" placeholder="${e.cards.length ? 'Next card #' : 'Card # (1–72)'}" autocomplete="off"><button class="btn" data-act="addcardbtn" data-o="${owner}">Add</button></div><div class="addprev" id="prev-${owner}"></div>`;
+  if (editable && e.cards.length > 1 && !dragHinted) h += '<div class="draghint">⋮⋮ grab a card to reorder the line</div>';
+  if (editable && e.cards.length < 4) h += `<div class="addrow"><input class="f" id="add-${owner}" list="cardlist" inputmode="numeric" enterkeyhint="done" data-ch="addcard" data-o="${owner}" placeholder="${e.cards.length ? 'Next card #' : 'Card # (1–72)'}" autocomplete="off"><button class="btn" data-act="addcardbtn" data-o="${owner}">Add</button><button class="btn ghost" data-act="pickcard" data-o="${owner}" aria-label="Browse cards">▦ Browse</button></div><div class="addprev" id="prev-${owner}"></div>`;
   return h + '</div>';
 }
 const dieRow = (act, i, k, val, extra='') => `<span class="seg dice6">${[1,2,3,4,5,6].map(v => `<button data-act="${act}" data-p="${i}" data-k="${k}" data-v="${v}" aria-pressed="${val === v}">${v}</button>`).join('')}</span>${extra}`;
@@ -1167,8 +1318,8 @@ function playerCard(R, X, pr, i, ps){
   const usedHere = pr.thumbs.length;
   const tokens = [0,1].map(k => `<span class="tok ${k < avail - usedHere ? 'on' : 'spent'}"></span>`).join('');
   const owner = `p${i}`;
-  let h = `<div class="pcard ${ps === i ? 'sel' : ''}"><div class="ph" style="background:linear-gradient(90deg,${s.c1},${s.c2})">${elIcon(s.el)}${s.p} · ${s.short}<span class="nm">${esc(seatName(i))}</span><span class="tk" title="Trigger Thumbs left">${tokens}</span></div><div class="pb">`;
-  h += `<div class="totals"><div><span>ATK</span><b>${r.hasInput ? r.atk : '–'}</b></div><div><span>BLK</span><b>${r.hasInput ? r.blk : '–'}</b></div><div class="${r.line > r.lim.line ? 'badl' : ''}"><span>LINE</span><b>${r.hasInput ? r.line : '–'}</b><span style="letter-spacing:0">of ${r.lim.line}</span></div></div>`;
+  let h = `<div class="pcard ${ps === i ? 'sel' + (FX.slide ? ' slide-' + FX.slide : '') : ''}"><div class="ph" style="background:linear-gradient(90deg,${s.c1},${s.c2})">${elIcon(s.el)}${s.p} · ${s.short}<span class="nm">${esc(seatName(i))}</span><span class="tk" title="Trigger Thumbs left">${tokens}</span></div><div class="pb">`;
+  h += `<div class="totals"><div><span>ATK</span><b data-bk="${i}a">${r.hasInput ? r.atk : '–'}</b></div><div><span>BLK</span><b data-bk="${i}b">${r.hasInput ? r.blk : '–'}</b></div><div class="${r.line > r.lim.line ? 'badl' : ''}"><span>LINE</span><b data-bk="${i}l">${r.hasInput ? r.line : '–'}</b><span style="letter-spacing:0">of ${r.lim.line}</span></div></div>`;
   h += `<div class="row" style="justify-content:space-between"><span class="seg"><button data-act="mode" data-p="${i}" data-v="cards" aria-pressed="${pr.mode==='cards'}">Cards</button><button data-act="mode" data-p="${i}" data-v="manual" aria-pressed="${pr.mode==='manual'}">Totals</button></span>
     <span class="tiny muted">${pr.mode === 'cards' ? `${r.cards.length} card${r.cards.length===1?'':'s'} · ${r.seams} seam${r.seams===1?'':'s'}` : 'from the sliders'}</span></div>`;
   if (pr.mode === 'manual') {
@@ -1209,7 +1360,7 @@ function resolutionPanel(R, X, C){
   const table = rows.map(({s, i, r, aTxt, bTxt, tot}) => `<tr><td><span class="seatdot" style="background:${s.hi}"></span>${s.p} <span class="muted small">${esc(seatName(i) || s.short)}</span></td>
       <td class="big">${r.hasInput ? r.atk : '–'}</td><td class="big">${r.hasInput ? r.blk : '–'}</td><td>${r.hasInput ? r.line : '–'}</td>
       <td>${aTxt}</td><td>${bTxt}</td><td>${r.matrix}</td><td>${w === 5 ? (r.bleed ? '+' + r.bleed : '0') : '—'}</td><td>${r.t6 ? (r.thumbOff ? '−' + r.thumbOff : '') + (r.wasted6 ? ` <span class="tiny muted">${r.wasted6} wasted</span>` : '') : '—'}</td>
-      <td class="big dmg${Math.min(r.dmg,4)}">${r.dmg}</td><td class="big">${tot}</td><td>${R.locked ? ORD(C.rounds[R.n-1].standing[i]) : '—'}</td></tr>`).join('');
+      <td class="big dmg${Math.min(r.dmg,4)}" data-bk="d${i}">${r.dmg}</td><td class="big">${tot}</td><td>${R.locked ? ORD(C.rounds[R.n-1].standing[i]) : '—'}</td></tr>`).join('');
   const list = rows.map(({s, i, r, aTxt, bTxt, tot, extras}) => `<div class="resrow" style="--sc:${s.hi}"><div><b>${s.p}</b> <span class="muted small">${esc(seatName(i) || s.short)}</span><div class="tiny muted">ATK ${r.hasInput ? r.atk : '–'} (${aTxt}) · BLK ${r.hasInput ? r.blk : '–'} (${bTxt})${extras ? ' · ' + extras : ''}</div></div>
       <div class="rd"><b class="dmg${Math.min(r.dmg,4)}">+${r.dmg}</b><small>total ${tot}</small></div></div>`).join('');
   const issues = X.issues.map(x => `<div class="issue">• ${x.t} ${x.roll ? `<button class="btn sm" data-act="rolloff" data-v="${x.roll}" style="margin-left:6px">Roll off digitally</button>` : ''}</div>`).join('');
@@ -1325,7 +1476,7 @@ function parseCard(v){
   const lc = v.toLowerCase(); const c = DECK.find(c => c.name.toLowerCase() === lc) || DECK.find(c => c.name.toLowerCase().startsWith(lc));
   return c ? c.n : null;
 }
-function changed(){ save(); try { saveKit(); } catch(e){} renderHelper(); if (curView === 'kit') renderKit(); }
+function changed(){ save(); try { saveKit(); } catch(e){} renderHelper(); if (curView === 'kit') renderKit(); clearFX(); }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act, v = b.dataset.v, p = b.dataset.p != null ? +b.dataset.p : null;
@@ -1335,7 +1486,7 @@ document.addEventListener('click', e => {
     case 'viewround': G.view = +v; changed(); break;
     case 'gotoround': G.view = +v; G.sub = 'play'; changed(); break;
     case 'mode': R.players[p].mode = v; changed(); break;
-    case 'rmcard': { const t = ownerTarget(b.dataset.o); t.cards.splice(+b.dataset.k, 1); changed(); break; }
+    case 'rmcard': removeCard(b.dataset.o, +b.dataset.k); break;
     case 'mvcard': { const t = ownerTarget(b.dataset.o), k = +b.dataset.k; [t.cards[k-1], t.cards[k]] = [t.cards[k], t.cards[k-1]]; changed(); break; }
     case 'commit': { const pr = R.players[p], n = +v; while (pr.thumbs.length < n) pr.thumbs.push(G.settings.diceSrc === 'digital' ? 0 : 0); pr.thumbs.length = n; changed(); break; }
     case 'rollthumb': { R.players[p].thumbs[+b.dataset.k] = d6(); beep(520,.06,.08); changed(); break; }
@@ -1383,7 +1534,7 @@ function startNew(){
 }
 function addCardFrom(t){
   const n = parseCard(t.value); if (!n) { toast('No card matches that. Try a number from 1 to 72.'); t.value = ''; return; }
-  const o = ownerTarget(t.dataset.o); if (o.cards.length >= 4) return; o.cards.push(n);
+  const o = ownerTarget(t.dataset.o); if (o.cards.length >= 4) return; o.cards.push(n); FX.chip = {o: t.dataset.o, k: o.cards.length - 1, type: 'enter'}; FX.seam = t.dataset.o;
   const dup = t.dataset.o !== 'lb' && G.rounds[G.view-1].players.some((pp, k) => `p${k}` !== t.dataset.o && pp.cards.includes(n));
   if (dup) toast(`P${String(n).padStart(2,'0')} is already in another player's line this round.`);
   t.value = ''; changed();
@@ -1863,10 +2014,12 @@ function renderLineBuilder(){
   const wheel = KIT.lb.w === 10 ? 3 : KIT.lb.w === 6 ? 6 : null;
   const e = evalPlayer({mode:'cards', cards:KIT.lb.cards, thumbs:[], flip:false}, wheel);
   const ok = e.cards.length && e.line <= e.lim.line && e.cards.length <= e.lim.cards;
-  $('#linebuilder').innerHTML = `<div class="totals" style="margin-bottom:10px"><div><span>ATK</span><b>${e.atk}</b></div><div><span>BLK</span><b>${e.blk}</b></div><div class="${e.line > e.lim.line ? 'badl' : ''}"><span>LINE</span><b>${e.line}</b><span style="letter-spacing:0">of ${e.lim.line}</span></div></div>
+  const _lh = $('#linebuilder'), _lp = snapBumps(_lh, 'lb');
+  _lh.innerHTML = `<div class="totals" style="margin-bottom:10px"><div><span>ATK</span><b data-bk="la">${e.atk}</b></div><div><span>BLK</span><b data-bk="lb">${e.blk}</b></div><div class="${e.line > e.lim.line ? 'badl' : ''}"><span>LINE</span><b data-bk="ll">${e.line}</b><span style="letter-spacing:0">of ${e.lim.line}</span></div></div>
     ${chipsHTML({cards:KIT.lb.cards}, e, 'lb', e.lim.cards)}
     <div class="row" style="margin-top:10px;justify-content:space-between"><span class="pill ${!e.cards.length ? 'dim' : ok ? 'good' : 'bad'}">${!e.cards.length ? 'Add cards to check a line' : ok ? 'Legal line' : e.cards.length > e.lim.cards ? `Too many cards (max ${e.lim.cards})` : `Too long by ${e.line - e.lim.line}`}</span>
     <span class="tiny muted">${e.len} length − ${e.seams} seam${e.seams === 1 ? '' : 's'} = ${e.line} · seams +${e.seamA} ATK, +${e.seamB} BLK</span>${KIT.lb.cards.length ? '<button class="btn sm ghost" id="lbclear">Clear</button>' : ''}</div>`;
+  applyBumps(_lh, _lp, 'lb');
   const c = $('#lbclear'); if (c) c.onclick = () => { KIT.lb.cards = []; saveKit(); renderKit(); };
 }
 
@@ -1892,6 +2045,251 @@ $('#kbround').addEventListener('click', e => { const b = e.target.closest('[data
 function renderKit(){ renderLineBuilder(); renderKitBoard(); paintTokens(); updateKitSend(); paintKitTool(); }
 function paintKitTool(){ const t = KIT.tool || 'wheel'; $$('#kittabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t)); $$('#v-kit [data-tool]').forEach(el => el.classList.toggle('on', el.dataset.tool === t)); if (t === 'wheel') kitWheel.draw(); }
 $('#kittabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; KIT.tool = b.dataset.t; saveKit(); paintKitTool(); });
+
+const FX = {chip: null, seam: null, slide: null};
+/* ================= POLISH: motion, drag and drop, card picker ================= */
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pad2 = n => String(n).padStart(2, '0');
+const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch(e){} };
+const tickSnd = () => { try { beep(430, .05, .05); } catch(e){} };
+
+/* one-shot hints that the next render uses to animate only what changed */
+function clearFX(){ FX.chip = null; FX.seam = null; FX.slide = null; }
+
+/* ---------- numbers pop when they change ---------- */
+function snapBumps(host, ctx){ const m = {__ctx: ctx}; host.querySelectorAll('[data-bk]').forEach(el => m[el.dataset.bk] = el.textContent); return m; }
+function applyBumps(host, prev, ctx){
+  if (!prev || prev.__ctx !== ctx || REDUCED) return;
+  host.querySelectorAll('[data-bk]').forEach(el => { const k = el.dataset.bk; if (k in prev && prev[k] !== el.textContent) el.classList.add('bump'); });
+}
+
+/* ---------- drag to reorder ---------- */
+const DRAG = {pre: null, on: false};
+let dragHinted = false; try { dragHinted = !!localStorage.getItem('hs-dragged'); } catch(e){}
+
+function moveCard(o, from, to){
+  const t = ownerTarget(o); if (to < 0 || to >= t.cards.length || from === to) return;
+  const [m] = t.cards.splice(from, 1); t.cards.splice(to, 0, m);
+  FX.chip = {o, k: to, type: 'drop'}; FX.seam = o; changed();
+}
+function removeCard(o, k){
+  const t = ownerTarget(o), n = t.cards[k]; if (n == null) return;
+  const chip = document.querySelector(`.chip[data-o="${o}"][data-chip="${k}"]`);
+  const commit = () => {
+    t.cards.splice(k, 1); FX.seam = o; changed();
+    toast(`Removed P${pad2(n)}`, {label:'Undo', fn: () => { t.cards.splice(k, 0, n); FX.chip = {o, k, type:'enter'}; FX.seam = o; changed(); }});
+  };
+  if (chip && !REDUCED) { chip.classList.add('leaving'); setTimeout(commit, 170); } else commit();
+}
+
+document.addEventListener('pointerdown', e => {
+  if (e.button > 0 || DRAG.on) return;
+  const chip = e.target.closest && e.target.closest('.chip.ed'); if (!chip) return;
+  if (e.target.closest('button, input, a, select')) return;
+  const onGrip = !!e.target.closest('[data-grip]'), touch = e.pointerType === 'touch';
+  const pre = DRAG.pre = {chip, id: e.pointerId, x: e.clientX, y: e.clientY, touch, onGrip, timer: 0};
+  if (touch && !onGrip) pre.timer = setTimeout(() => { if (DRAG.pre === pre) { buzz(12); dragBegin(); } }, 260);
+});
+
+document.addEventListener('pointermove', e => {
+  const pre = DRAG.pre; if (!pre || e.pointerId !== pre.id) return;
+  if (!DRAG.on) {
+    const d = Math.hypot(e.clientX - pre.x, e.clientY - pre.y);
+    if (pre.touch && !pre.onGrip) { if (d > 8) cancelPre(); return; }   // finger moved first: that's a scroll
+    if (d > (pre.touch ? 3 : 5)) dragBegin();
+    else return;
+  }
+  DRAG.px = e.clientX; DRAG.py = e.clientY; dragUpdate();
+}, {passive: true});
+
+document.addEventListener('touchmove', e => { if (DRAG.on) e.preventDefault(); }, {passive: false});
+document.addEventListener('contextmenu', e => { if (DRAG.on || (DRAG.pre && DRAG.pre.touch)) e.preventDefault(); });
+document.addEventListener('pointerup', e => { if (DRAG.pre && e.pointerId === DRAG.pre.id) { DRAG.on ? dragEnd(true) : cancelPre(); } });
+document.addEventListener('pointercancel', e => { if (DRAG.pre && e.pointerId === DRAG.pre.id) { DRAG.on ? dragEnd(false) : cancelPre(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && DRAG.on) dragEnd(false); });
+
+function cancelPre(){ if (DRAG.pre) clearTimeout(DRAG.pre.timer); DRAG.pre = null; }
+
+function dragBegin(){
+  const pre = DRAG.pre; if (!pre) return; clearTimeout(pre.timer);
+  const chip = pre.chip, host = chip.parentElement, o = chip.dataset.o;
+  const els = $$('.chip.ed', host); if (els.length < 2) { DRAG.pre = null; return; }
+  const sy = window.scrollY;
+  const items = els.map(el => { const r = el.getBoundingClientRect(); return {el, top: r.top + sy, h: r.height}; });
+  const from = els.indexOf(chip);
+  Object.assign(DRAG, {on: true, o, host, chip, items, from, to: from, sy0: sy, x0: pre.x, y0: pre.y, px: pre.x, py: pre.y,
+    gaps: items.slice(1).map((it, i) => it.top - (items[i].top + items[i].h))});
+  try { chip.setPointerCapture(pre.id); } catch(e){}
+  host.classList.add('sorting'); chip.classList.add('dragging'); document.body.classList.add('is-dragging');
+  buzz(8); dragHinted = true; try { localStorage.setItem('hs-dragged', '1'); } catch(e){}
+  const loop = () => {
+    if (!DRAG.on) return;
+    const edge = 70, vh = window.innerHeight; let v = 0;
+    if (DRAG.py < edge) v = -Math.ceil((edge - DRAG.py) / 5); else if (DRAG.py > vh - edge) v = Math.ceil((DRAG.py - (vh - edge)) / 5);
+    if (v) window.scrollBy(0, Math.max(-22, Math.min(22, v)));
+    dragUpdate(); DRAG.raf = requestAnimationFrame(loop);
+  };
+  DRAG.raf = requestAnimationFrame(loop);
+}
+
+/* slot layout: where each item sits when the dragged one is dropped at `to` */
+function dragLayout(){
+  const {items, from, to, gaps} = DRAG;
+  const order = items.map((_, i) => i).filter(i => i !== from); order.splice(to, 0, from);
+  const tops = []; let y = items[0].top;
+  order.forEach((idx, pos) => { tops[idx] = y; y += items[idx].h + (gaps[pos] ?? 0); });
+  return tops;
+}
+function dragUpdate(){
+  if (!DRAG.on) return;
+  const {items, from, chip} = DRAG;
+  const dy = (DRAG.py - DRAG.y0) + (window.scrollY - DRAG.sy0), dx = (DRAG.px - DRAG.x0) * .12;
+  const tilt = Math.max(-2.5, Math.min(2.5, (DRAG.px - DRAG.x0) / 40));
+  chip.style.transform = `translate3d(${dx}px,${dy}px,0) scale(1.03) rotate(${tilt}deg)`;
+  // nearest slot by centre; slots are the original positions
+  const centre = items[from].top + items[from].h / 2 + dy;
+  let best = DRAG.to, bd = Infinity;
+  items.forEach((it, j) => { const d = Math.abs(centre - (it.top + it.h / 2)); if (d < bd) { bd = d; best = j; } });
+  if (best !== DRAG.to) {
+    DRAG.to = best; tickSnd(); buzz(6);
+    const tops = dragLayout();
+    items.forEach((it, i) => { if (i !== from) it.el.style.transform = `translate3d(0,${tops[i] - it.top}px,0)`; });
+  }
+}
+function dragEnd(commit){
+  if (!DRAG.on) return;
+  cancelAnimationFrame(DRAG.raf);
+  const {chip, host, items, from, o} = DRAG; const to = commit ? DRAG.to : from;
+  DRAG.on = false; DRAG.pre = null;
+  document.body.classList.remove('is-dragging');
+  const finish = () => {
+    host.classList.remove('sorting'); chip.classList.remove('dragging', 'settling');
+    items.forEach(it => it.el.style.transform = '');
+    if (to !== from) moveCard(o, from, to);
+  };
+  if (to === from && !commit) items.forEach(it => it.el.style.transform = '');
+  if (REDUCED) { finish(); return; }
+  const tops = dragLayout();
+  chip.classList.add('settling');
+  chip.style.transform = `translate3d(0,${(to === from ? 0 : tops[from] - items[from].top)}px,0)`;
+  setTimeout(finish, 210);
+}
+
+/* keyboard: focus the grip, then arrow keys move the card */
+document.addEventListener('keydown', e => {
+  const g = e.target.closest && e.target.closest('[data-grip]'); if (!g) return;
+  const chip = g.closest('.chip'), o = chip.dataset.o, k = +chip.dataset.chip;
+  const d = (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1 : 0;
+  if (!d) return; e.preventDefault();
+  const n = ownerTarget(o).cards.length; if (k + d < 0 || k + d >= n) return;
+  moveCard(o, k, k + d);
+  const again = document.querySelector(`.chip[data-o="${o}"][data-chip="${k + d}"] [data-grip]`); if (again) again.focus({preventScroll: true});
+});
+
+/* ---------- swipe between seats on phones ---------- */
+let swipe = null;
+document.addEventListener('touchstart', e => {
+  swipe = null;
+  if (window.innerWidth >= 700 || curView !== 'helper' || !G || G.sub !== 'play') return;
+  if (!e.target.closest('.players') || e.target.closest('.chip, input, select, .scroll-x')) return;
+  const t = e.touches[0]; swipe = {x: t.clientX, y: t.clientY, t: Date.now()};
+}, {passive: true});
+document.addEventListener('touchend', e => {
+  if (!swipe || DRAG.on) return; const t = e.changedTouches[0];
+  const dx = t.clientX - swipe.x, dy = t.clientY - swipe.y, quick = Date.now() - swipe.t < 700; swipe = null;
+  if (!quick || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8) return;
+  const cur = G.pSel || 0, nxt = Math.max(0, Math.min(3, cur + (dx < 0 ? 1 : -1))); if (nxt === cur) return;
+  G.pSel = nxt; FX.slide = dx < 0 ? 'l' : 'r'; buzz(8); changed();
+}, {passive: true});
+
+/* ---------- card picker sheet ---------- */
+const PK = {o: null, q: '', el: '', seamOnly: false};
+function pkEnsure(){
+  if (document.getElementById('pk')) return;
+  const d = document.createElement('div'); d.className = 'pk'; d.id = 'pk'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Pick spell cards');
+  d.innerHTML = `<div class="pksheet"><div class="pkhd"><div class="pkgrab"></div>
+    <div class="pktop"><h3>Build the line</h3><span class="pill gold" id="pkcount"></span><span class="tiny muted" id="pklim"></span><button class="btn gold sm" id="pkdone" style="margin-left:auto">Done</button></div>
+    <div class="pkline" id="pkline"></div>
+    <div class="pkfilters"><input class="f" id="pkq" type="search" placeholder="Search name or number" autocomplete="off" enterkeyhint="search">
+      <span class="seg" id="pkel"></span><button class="btn sm ghost" id="pkseam" aria-pressed="false">Seam matches</button></div></div>
+    <div class="pkgrid" id="pkgrid"></div></div>`;
+  document.body.appendChild(d);
+  d.addEventListener('click', e => {
+    if (e.target === d || e.target.id === 'pkdone') return pkClose();
+    const rm = e.target.closest('[data-pkrm]'); if (rm) { pkRemove(+rm.dataset.pkrm); return; }
+    const el = e.target.closest('[data-pkel]'); if (el) { PK.el = PK.el === el.dataset.pkel ? '' : el.dataset.pkel; pkPaint(); return; }
+    if (e.target.closest('#pkseam')) { PK.seamOnly = !PK.seamOnly; pkPaint(); return; }
+    const c = e.target.closest('[data-pk]'); if (c) pkToggle(+c.dataset.pk);
+  });
+  $('#pkq', d).addEventListener('input', e => { PK.q = e.target.value.trim().toLowerCase(); pkPaint(true); });
+}
+function pkWheel(){ return PK.o === 'lb' ? (KIT.lb.w === 10 ? 3 : KIT.lb.w === 6 ? 6 : null) : curRound().wheel; }
+function pkOpen(o){
+  pkEnsure(); Object.assign(PK, {o, q: '', el: '', seamOnly: false}); $('#pkq').value = '';
+  $('#pk').classList.add('on'); document.body.classList.add('noscroll'); pkPaint();
+  if (window.matchMedia('(hover:hover)').matches) setTimeout(() => $('#pkq').focus({preventScroll: true}), 60);
+}
+function pkClose(){ const d = $('#pk'); if (d) d.classList.remove('on'); document.body.classList.remove('noscroll'); PK.o = null; }
+function pkToggle(n){
+  const t = ownerTarget(PK.o), i = t.cards.indexOf(n);
+  if (i >= 0) { t.cards.splice(i, 1); FX.seam = PK.o; buzz(6); }
+  else {
+    if (t.cards.length >= 4) { toast('A line holds at most 4 cards.'); return; }
+    t.cards.push(n); FX.chip = {o: PK.o, k: t.cards.length - 1, type: 'enter'}; FX.seam = PK.o; buzz(10); tickSnd();
+  }
+  changed(); pkPaint(true);
+}
+function pkRemove(i){ const t = ownerTarget(PK.o); t.cards.splice(i, 1); FX.seam = PK.o; changed(); pkPaint(true); }
+function pkPaint(keepScroll){
+  if (!PK.o) return;
+  const t = ownerTarget(PK.o), w = pkWheel(), lim = limitsFor(w);
+  const cards = t.cards.map(n => DECK[n-1]).filter(Boolean), last = cards[cards.length-1];
+  const ev = evalPlayer({mode:'cards', cards: t.cards, thumbs: [], flip: false}, w);
+  $('#pkcount').textContent = `${cards.length} / ${lim.cards} cards`;
+  $('#pklim').textContent = `Line ${ev.line} of ${lim.line}`;
+  $('#pkline').innerHTML = cards.length ? cards.map((c, i) => {
+    const s = i > 0 ? ev.seamList[i-1] : null;
+    return `${i > 0 ? (s ? `<span class="sm2">${elIcon(s.el)}${elIcon(s.el)} +1 ${s.stat}</span>` : '<span class="tiny muted">›</span>') : ''}<span class="m">${elIcon(c.s)}<b>P${pad2(c.n)}</b>${esc(c.name)}<button data-pkrm="${i}" aria-label="Remove ${esc(c.name)}">✕</button></span>`;
+  }).join('') : '<span class="tiny muted">Tap cards below to build your line, in casting order. Cards that start where the last one ends make a seam.</span>';
+  $('#pkel').innerHTML = ['fire','water','earth','wind'].map(e => `<button data-pkel="${e}" aria-pressed="${PK.el === e}" aria-label="Starts with ${EL_NAME[e]}" title="Starts with ${EL_NAME[e]}">${elIcon(e)}</button>`).join('');
+  const sb = $('#pkseam'); sb.setAttribute('aria-pressed', PK.seamOnly); sb.style.display = last ? '' : 'none';
+  sb.classList.toggle('gold', PK.seamOnly);
+  const usedBy = {}; if (PK.o !== 'lb') curRound().players.forEach((p, i) => { if (`p${i}` !== PK.o) p.cards.forEach(n => usedBy[n] = i); });
+  let list = DECK.filter(c => (!PK.q || c.name.toLowerCase().includes(PK.q) || String(c.n) === PK.q.replace(/^(hs3-)?p?0*/, '')) && (!PK.el || c.s === PK.el) && (!PK.seamOnly || !last || c.s === last.e));
+  const g = $('#pkgrid'), st = g.scrollTop;
+  g.innerHTML = list.map(c => {
+    const idx = t.cards.indexOf(c.n), seam = last && idx < 0 && c.s === last.e, by = usedBy[c.n];
+    return `<button class="pkc ${idx >= 0 ? 'in' : ''} ${seam ? 'seamok' : ''} ${by != null ? 'used' : ''}" data-pk="${c.n}" aria-label="${esc(c.name)}, ${EL_NAME[c.s]} to ${EL_NAME[c.e]}, length ${c.len}, ${c.atk} attack, ${c.blk} block">${idx >= 0 ? `<span class="bdg">${idx + 1}</span>` : seam ? '<span class="bdg g">seam</span>' : by != null ? `<span class="bdg u">${SEATS[by].p}</span>` : ''}${cardHTML(c)}</button>`;
+  }).join('') || '<p class="pkempty">No cards match. Clear a filter to see more.</p>';
+  g.scrollTop = keepScroll ? st : 0;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-act="pickcard"]'); if (b) pkOpen(b.dataset.o); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && PK.o) pkClose(); });
+
+/* ---------- deck: tilt follows the pointer ---------- */
+document.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || REDUCED) return;
+  const c = e.target.closest && e.target.closest('#deckgrid .card'); if (!c) return;
+  const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+  c.style.setProperty('--ry', ((x - .5) * 14).toFixed(1) + 'deg'); c.style.setProperty('--rx', ((.5 - y) * 12).toFixed(1) + 'deg');
+  c.style.setProperty('--mx', (x * 100).toFixed(0) + '%'); c.style.setProperty('--my', (y * 100).toFixed(0) + '%');
+}, {passive: true});
+document.addEventListener('pointerout', e => { const c = e.target.closest && e.target.closest('#deckgrid .card'); if (c && !c.contains(e.relatedTarget)) { c.style.removeProperty('--rx'); c.style.removeProperty('--ry'); } });
+
+/* ---------- scroll progress + reveal on scroll ---------- */
+const sprog = document.createElement('i'); sprog.className = 'sprog'; sprog.setAttribute('aria-hidden', 'true'); document.body.appendChild(sprog);
+let spq = 0;
+addEventListener('scroll', () => { if (spq) return; spq = requestAnimationFrame(() => { spq = 0; const h = document.documentElement.scrollHeight - innerHeight; sprog.style.transform = `scaleX(${h > 0 ? Math.min(1, scrollY / h) : 0})`; }); }, {passive: true});
+let rvIO = null;
+function revealScan(){
+  if (REDUCED || !('IntersectionObserver' in window)) return;
+  const root = document.getElementById('v-' + curView); if (!root || !['world','crews','rules'].includes(curView)) return;
+  rvIO = rvIO || new IntersectionObserver(es => {
+    let n = 0; es.forEach(en => { if (en.isIntersecting) { en.target.style.transitionDelay = (n++ * 70) + 'ms'; en.target.classList.add('in'); rvIO.unobserve(en.target); } });
+  }, {threshold: .08, rootMargin: '0px 0px -30px 0px'});
+  root.querySelectorAll('.rule, .lore article, .ties > div, .crew, .note').forEach(el => { if (!el.classList.contains('in')) { el.classList.add('rv'); rvIO.observe(el); } });
+  setTimeout(() => root.querySelectorAll('.rv:not(.in)').forEach(el => { el.style.transitionDelay = '0ms'; el.classList.add('in'); }), 2200);
+}
 
 /* ================= BOOT ================= */
 try { document.fonts && document.fonts.ready.then(() => { kitWheel.draw(); ovWheel.draw(); }); } catch(e){}
